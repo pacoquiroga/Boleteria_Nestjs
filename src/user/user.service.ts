@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserRolService } from 'src/user_rol/user_rol.service';
+import { Rol } from 'src/rol/entities/rol.entity';
+import { CreateUserRolDto } from 'src/user_rol/dto/create-user_rol.dto';
 
 @Injectable()
 export class UserService {
@@ -12,22 +14,42 @@ export class UserService {
     private readonly userRolService: UserRolService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ){}
+    @InjectRepository(Rol)
+    private rolRepository: Repository<Rol>,
+  ) { }
 
   async create(createUserDto: CreateUserDto) {
     const existingUser = await this.userRepository.findOne({
-      where: { email: createUserDto.email , username: createUserDto.username},
+      where: { email: createUserDto.email, username: createUserDto.username },
     })
+
+    const existingRol = await this.rolRepository.findOne({
+      where: { rolName: createUserDto.rol},
+    });
 
     if (existingUser) {
       throw new Error('User already exists');
     }
-    try{
-      const user = this.userRepository.create(createUserDto);
-      const userRol = this.userRolService.create()
-    }
-    
 
+    if (!existingRol) {
+      throw new Error('Rol does not exist');
+    }
+
+    try {
+      const user = this.userRepository.create(createUserDto);
+      const savedUser = await this.userRepository.save(user);
+      console.log('User created:', savedUser);
+
+      const userRol: CreateUserRolDto = {
+        rolName: existingRol.rolName,
+        id_user: savedUser.idUser,
+      };
+      const savedUserRol = await this.userRolService.create(userRol);
+      console.log('UserRol created:', savedUserRol);
+      return savedUser;
+    }catch (error){
+      throw new Error('Error creating user: ' + error.message);
+    }
   }
 
   findAll() {

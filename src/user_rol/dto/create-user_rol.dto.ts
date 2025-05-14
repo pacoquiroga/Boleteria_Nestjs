@@ -15,7 +15,7 @@ export class CreateUserRolDto {
     @IsOptional()
     @IsDateString({}, { message: 'La fecha de inicio debe ser una fecha válida' })
     @Transform(({ value }) => value ? value : new Date().toISOString())
-    since: Date = new Date();
+    since?: Date = new Date();
 
     @IsOptional()
     @IsDateString({}, { message: 'La fecha de fin debe ser una fecha válida' })
