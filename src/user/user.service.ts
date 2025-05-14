@@ -18,7 +18,7 @@ export class UserService {
     private userRepository: Repository<User>,
     @InjectRepository(Rol)
     private rolRepository: Repository<Rol>,
-  ) {}
+  ) { }
 
   private generarCadenaAleatoria(longitud: number): string {
     const caracteres =
@@ -34,17 +34,25 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    const existingUser = await this.userRepository.findOne({
-      where: { email: createUserDto.email, username: createUserDto.username },
+    const existingUserByEmail = await this.userRepository.findOne({
+      where: { email: createUserDto.email },
     });
+
+    const existingUserByUsername = await this.userRepository.findOne({
+      where: { username: createUserDto.username },
+    });
+
+    if (existingUserByEmail) {
+      throw new Error('A user with this email already exists');
+    }
+
+    if (existingUserByUsername) {
+      throw new Error('A user with this username already exists');
+    }
 
     const existingRol = await this.rolRepository.findOne({
       where: { rolName: createUserDto.rol },
     });
-
-    if (existingUser) {
-      throw new Error('User already exists');
-    }
 
     if (!existingRol) {
       throw new Error('Rol does not exist');
