@@ -80,6 +80,17 @@ export class UserRolService {
     }
   }
 
+  async findUserRolByUserId(id: number) {
+    const userRol = await this.userRolRepository.find({
+      where: { user: { idUser: id } },
+      relations: ['user', 'rol'],
+    });
+    if (!userRol) {
+      throw new Error('UserRol not found');
+    }
+    return userRol;
+  }
+
   remove(id: number) {
     return `This action removes a #${id} userRol`;
   }
