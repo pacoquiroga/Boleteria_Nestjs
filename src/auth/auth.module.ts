@@ -2,15 +2,18 @@ import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
-import { RolModule } from 'src/rol/rol.module'; // Import RolModule
+import { PassportModule } from '@nestjs/passport';
+import { RolModule } from 'src/rol/rol.module';
 import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
     UserModule,
-    RolModule, 
+    RolModule,
+    PassportModule,
     JwtModule.register({
-      // Your JWT configuration
+      secret: 'epale', 
+      signOptions: { expiresIn: '1h' }, 
     }),
   ],
   controllers: [AuthController],

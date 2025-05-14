@@ -7,6 +7,8 @@ import { Repository } from 'typeorm';
 import { UserRolService } from 'src/user_rol/user_rol.service';
 import { Rol } from 'src/rol/entities/rol.entity';
 import { CreateUserRolDto } from 'src/user_rol/dto/create-user_rol.dto';
+import * as bcrypt from 'bcryptjs';
+
 
 @Injectable()
 export class UserService {
@@ -17,6 +19,19 @@ export class UserService {
     @InjectRepository(Rol)
     private rolRepository: Repository<Rol>,
   ) { }
+
+  private generarCadenaAleatoria(longitud: number): string {
+    const caracteres =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._ñÑ';
+    let resultado = '';
+
+    for (let i = 0; i < longitud; i++) {
+      const indice = Math.floor(Math.random() * caracteres.length);
+      resultado += caracteres[indice];
+    }
+
+    return resultado;
+  }
 
   async create(createUserDto: CreateUserDto) {
     const existingUser = await this.userRepository.findOne({
@@ -36,13 +51,24 @@ export class UserService {
     }
 
     try {
-      const user = this.userRepository.create(createUserDto);
+      const salt = this.generarCadenaAleatoria(10);
+      const bcryptSalt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(
+        salt + createUserDto.password,
+        bcryptSalt,
+      );
+      const user = this.userRepository.create({
+        ...createUserDto,
+        password: hashedPassword,
+        salt,
+      });
       const savedUser = await this.userRepository.save(user);
       console.log('User created:', savedUser);
 
       const userRol: CreateUserRolDto = {
         rolName: existingRol.rolName,
         id_user: savedUser.idUser,
+        since: new Date(),
       };
       const savedUserRol = await this.userRolService.create(userRol);
       console.log('UserRol created:', savedUserRol);

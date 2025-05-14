@@ -23,7 +23,9 @@ export class CreateUserDto {
 
     @IsNotEmpty({ message: 'La contraseña es requerida' })
     @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
-    password: string;    @IsNotEmpty({ message: 'El número telefónico es requerido' })
+    password: string;   
+    
+    @IsNotEmpty({ message: 'El número telefónico es requerido' })
     @Length(10, 10, { message: 'El número telefónico debe tener 10 caracteres' })
     phone: string;
 
