@@ -5,9 +5,11 @@ import { UserRolController } from './user_rol.controller';
 import { UserRol } from './entities/user_rol.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserRol])],
+  imports: [
+    TypeOrmModule.forFeature([UserRol]),
+  ],
   controllers: [UserRolController],
   providers: [UserRolService],
-  exports: [TypeOrmModule]
+  exports: [UserRolService] 
 })
 export class UserRolModule {}
