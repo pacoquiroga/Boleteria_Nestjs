@@ -5,11 +5,13 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { AuthToken, LoginDto } from './types.d/auth.interface';
 import * as bcrypt from 'bcryptjs';
 import { RolService } from 'src/rol/rol.service';
+import { UserRolService } from 'src/user_rol/user_rol.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         private userService: UserService,
+        private userRolService: UserRolService,
         private rolService: RolService,
         private jwtService: JwtService,
     ) { }
@@ -31,15 +33,15 @@ export class AuthService {
     }
 
     async login(userLoginDto: LoginDto): Promise<AuthToken> {
-        const user = await this.userService.findByUsername(username);
+        const user = await this.userService.findByUsername(userLoginDto.username);
 
         if (user === null) {
             throw new Error('User not found');
         }
 
-        const userRol = await this.userService.findUserRolByUserId(user.idUser);
+        const userRol = await this.userRolService.findUserRolByUserId(user.idUser);
 
-        const rol = await this.rolService.findById(userRol.idRol);
+        const rol = await this.rolService.findOne(userRol.rol.idRol);
 
         const isPasswordValid = await bcrypt.compare(
             user.salt + userLoginDto.password,
@@ -54,7 +56,7 @@ export class AuthService {
             throw new Error('Invalid password');
         }
 
-        const payload = { sub: user.id, username: user.username };
+        const payload = { sub: user.idUser, username: user.username };
         await this.userService.update(user.idUser, { lastLogin: new Date() });
 
         return {
@@ -65,7 +67,7 @@ export class AuthService {
                 name: user.name,
                 lastname: user.lastname,
                 email: user.email,
-                rol: userCreateDto.rol,
+                rol: rol.rolName,
             },
         };
     }

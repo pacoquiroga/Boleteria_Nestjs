@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +12,7 @@ import * as bcrypt from 'bcryptjs';
 @Injectable()
 export class UserService {
   constructor(
+    @Inject(forwardRef(() => UserRolService))
     private readonly userRolService: UserRolService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -65,7 +66,7 @@ export class UserService {
       console.log('User created:', savedUser);
 
       const userRol: CreateUserRolDto = {
-        rolName: existingRol.rolName,
+        idRol: existingRol.idRol,
         idUser: savedUser.idUser,
         since: new Date(),
       };

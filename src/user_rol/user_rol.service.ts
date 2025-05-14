@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateUserRolDto } from './dto/create-user_rol.dto';
 import { UpdateUserRolDto } from './dto/update-user_rol.dto';
 import { Repository } from 'typeorm';
@@ -11,6 +11,7 @@ import { UserService } from 'src/user/user.service';
 export class UserRolService {
   constructor(
     private readonly rolService: RolService,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     @InjectRepository(UserRol)
     private userRolRepository: Repository<UserRol>,
@@ -81,7 +82,7 @@ export class UserRolService {
   }
 
   async findUserRolByUserId(id: number) {
-    const userRol = await this.userRolRepository.find({
+    const userRol = await this.userRolRepository.findOne({
       where: { user: { idUser: id } },
       relations: ['user', 'rol'],
     });
