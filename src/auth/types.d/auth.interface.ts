@@ -4,8 +4,9 @@ export interface AuthToken {
   user: {
     id: number;
     username: string;
-    roles: string[];
-    fullName: string;
+    rol: string;
+    name: string;
+    lastname: string;
     email: string;
   };
 }
