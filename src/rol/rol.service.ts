@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateRolDto } from './dto/create-rol.dto';
 import { UpdateRolDto } from './dto/update-rol.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,38 +10,55 @@ export class RolService {
   constructor(
     @InjectRepository(Rol)
     private rolRepository: Repository<Rol>,
-  ){}
+  ) {}
 
   async create(createRolDto: CreateRolDto) {
     const existingRol = await this.rolRepository.findOne({
       where: { rolName: createRolDto.rolName },
-    })
+    });
 
     if (existingRol) {
       throw new Error('Rol already exists');
     }
-    
-    try{
+
+    try {
       const rol = this.rolRepository.create(createRolDto);
       return await this.rolRepository.save(rol);
-    }catch (error) {
-      throw new Error('Error creating rol: ' + error.message + "Status: " + error.status);
+    } catch (error) {
+      throw new Error('Error creating rol: ' + error);
     }
   }
 
-  findAll() {
-    return `This action returns all rol`;
+  async findAll() {
+    try {
+      return await this.rolRepository.find();
+    } catch (error) {
+      throw new Error('Error finding roles: ' + error);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} rol`;
+  async findOne(id: number) {
+    const rol = await this.rolRepository.findOne({
+      where: { idRol: id },
+    });
+    if (!rol) {
+      throw new Error('Rol not found');
+    }
+    return rol;
   }
 
-  update(id: number, updateRolDto: UpdateRolDto) {
-    return `This action updates a #${id} rol`;
+  async update(id: number, updateRolDto: UpdateRolDto) {
+    await this.findOne(id);
+
+    try {
+      await this.rolRepository.update(id, updateRolDto);
+      return await this.rolRepository.findOne({ where: { idRol: id } });
+    } catch (error) {
+      throw new Error('Error updating rol: ' + error);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} rol`;
+  async remove(id: number) {
+    return await this.rolRepository.delete(id);
   }
 }
