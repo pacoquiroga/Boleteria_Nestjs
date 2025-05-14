@@ -67,7 +67,7 @@ export class UserService {
 
       const userRol: CreateUserRolDto = {
         rolName: existingRol.rolName,
-        id_user: savedUser.idUser,
+        idUser: savedUser.idUser,
         since: new Date(),
       };
       const savedUserRol = await this.userRolService.create(userRol);

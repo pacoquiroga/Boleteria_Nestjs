@@ -10,7 +10,7 @@ export class CreateUserRolDto {
     @IsNotEmpty({ message: 'El ID del usuario es requerido' })
     @IsNumber({}, { message: 'El ID del usuario debe ser un número' })
     @Type(() => Number)
-    id_user: number;
+    idUser: number;
 
     @IsOptional()
     @IsDateString({}, { message: 'La fecha de inicio debe ser una fecha válida' })
