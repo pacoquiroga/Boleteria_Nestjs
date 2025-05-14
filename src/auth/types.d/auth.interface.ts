@@ -10,3 +10,8 @@ export interface AuthToken {
     email: string;
   };
 }
+
+export declare class LoginDto {
+    username: string;
+    password: string;
+}
