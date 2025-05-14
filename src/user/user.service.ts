@@ -3,12 +3,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { UserRolService } from 'src/user_rol/user_rol.service';
 import { Rol } from 'src/rol/entities/rol.entity';
 import { CreateUserRolDto } from 'src/user_rol/dto/create-user_rol.dto';
 import * as bcrypt from 'bcryptjs';
-
 
 @Injectable()
 export class UserService {
@@ -18,7 +17,7 @@ export class UserService {
     private userRepository: Repository<User>,
     @InjectRepository(Rol)
     private rolRepository: Repository<Rol>,
-  ) { }
+  ) {}
 
   private generarCadenaAleatoria(longitud: number): string {
     const caracteres =
@@ -36,10 +35,10 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     const existingUser = await this.userRepository.findOne({
       where: { email: createUserDto.email, username: createUserDto.username },
-    })
+    });
 
     const existingRol = await this.rolRepository.findOne({
-      where: { rolName: createUserDto.rol},
+      where: { rolName: createUserDto.rol },
     });
 
     if (existingUser) {
@@ -73,24 +72,93 @@ export class UserService {
       const savedUserRol = await this.userRolService.create(userRol);
       console.log('UserRol created:', savedUserRol);
       return savedUser;
-    }catch (error){
+    } catch (error) {
       throw new Error('Error creating user: ' + error.message);
     }
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll() {
+    try {
+      return await this.userRepository.find();
+    } catch (error) {
+      throw new Error('Error fetching users: ' + error.message);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    try {
+      const user = await this.userRepository.findOne({ where: { idUser: id } });
+      if (!user) {
+        throw new Error('User not found');
+      }
+      return user;
+    } catch (error) {
+      throw new Error('Error fetching user: ' + error.message);
+    }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findByUsername(username: string) {
+    try {
+      const user = await this.userRepository.findOne({ where: { username } });
+      if (!user) {
+        throw new Error('User not found');
+      }
+      return user;
+    } catch (error) {
+      throw new Error('Error fetching user: ' + error.message);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    try {
+      const user = await this.userRepository.findOne({ where: { idUser: id } });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Si se actualiza el email o username, verificar que no exista otro usuario con los mismos datos
+      if (updateUserDto.email || updateUserDto.username) {
+        const existingUser = await this.userRepository.findOne({
+          where: [
+            { email: updateUserDto.email, idUser: Not(id) },
+            { username: updateUserDto.username, idUser: Not(id) },
+          ],
+        });
+
+        if (existingUser) {
+          throw new Error('Email or username already exists');
+        }
+      }
+
+      // Si se actualiza la contraseña, hash la nueva contraseña
+      if (updateUserDto.password) {
+        const bcryptSalt = await bcrypt.genSalt(10);
+        updateUserDto.password = await bcrypt.hash(
+          user.salt + updateUserDto.password,
+          bcryptSalt,
+        );
+      }
+
+      await this.userRepository.update(id, updateUserDto);
+      return await this.userRepository.findOne({ where: { idUser: id } });
+    } catch (error) {
+      throw new Error('Error updating user: ' + error.message);
+    }
+  }
+
+  async remove(id: number) {
+    try {
+      const user = await this.userRepository.findOne({ where: { idUser: id } });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      await this.userRepository.delete(id);
+      return { message: 'User deleted successfully' };
+    } catch (error) {
+      throw new Error('Error deleting user: ' + error.message);
+    }
   }
 }
