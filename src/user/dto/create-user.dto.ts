@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString, Length, MinLength, IsEnum } from 'class-validator';
-import { RoleType } from 'src/rol/enums/enums';
+import { RoleType } from '../../rol/enums/enums';
 
 export class CreateUserDto {
     @IsNotEmpty({ message: 'El nombre es requerido' })

@@ -4,9 +4,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Not, Repository } from 'typeorm';
-import { UserRolService } from 'src/user_rol/user_rol.service';
-import { Rol } from 'src/rol/entities/rol.entity';
-import { CreateUserRolDto } from 'src/user_rol/dto/create-user_rol.dto';
+import { UserRolService } from '../user_rol/user_rol.service';
+import { Rol } from '../rol/entities/rol.entity';
+import { CreateUserRolDto } from '../user_rol/dto/create-user_rol.dto';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()

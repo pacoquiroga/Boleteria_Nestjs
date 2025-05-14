@@ -1,4 +1,4 @@
-import { EventEntity } from 'src/event_entity/entities/eventEntity.entity';
+import { EventEntity } from '../../event_entity/entities/eventEntity.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity('transaction')

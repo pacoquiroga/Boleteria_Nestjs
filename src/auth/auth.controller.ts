@@ -1,6 +1,6 @@
 import { Body, Controller, HttpException, HttpStatus, Logger, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import { first, firstValueFrom } from 'rxjs';
 import { Auth } from 'typeorm';
 import { AuthToken, LoginDto } from './types.d/auth.interface';

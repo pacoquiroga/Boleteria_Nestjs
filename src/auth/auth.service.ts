@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import { AuthToken, LoginDto } from './types.d/auth.interface';
 import * as bcrypt from 'bcryptjs';
-import { RolService } from 'src/rol/rol.service';
-import { UserRolService } from 'src/user_rol/user_rol.service';
+import { RolService } from '../rol/rol.service';
+import { UserRolService } from '../user_rol/user_rol.service';
 
 @Injectable()
 export class AuthService {
