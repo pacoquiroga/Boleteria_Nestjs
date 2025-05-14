@@ -37,7 +37,7 @@ export class RolService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<Rol> {
     const rol = await this.rolRepository.findOne({
       where: { idRol: id },
     });
