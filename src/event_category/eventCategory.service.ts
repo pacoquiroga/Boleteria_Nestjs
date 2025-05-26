@@ -1,26 +1,116 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, Not } from 'typeorm';
 import { CreateEventCategoryDto } from './dto/create-eventCategory.dto';
 import { UpdateEventCategoryDto } from './dto/update-eventCategory.dto';
+import { EventCategory } from './entities/eventCategory.entity';
 
 @Injectable()
 export class EventCategoryService {
-  create(createEventCategoryDto: CreateEventCategoryDto) {
-    return 'This action adds a new eventCategory';
+  constructor(
+    @InjectRepository(EventCategory)
+    private eventCategoryRepository: Repository<EventCategory>,
+  ) {}
+
+  async create(
+    createEventCategoryDto: CreateEventCategoryDto,
+  ): Promise<EventCategory> {
+    try {
+      // Verificar si ya existe una categoría con el mismo nombre
+      const existingCategory = await this.eventCategoryRepository.findOne({
+        where: { name: createEventCategoryDto.name },
+      });
+
+      if (existingCategory) {
+        throw new Error('Ya existe una categoría con este nombre');
+      }
+
+      // Crear una nueva instancia de la categoría
+      const newCategory = this.eventCategoryRepository.create(
+        createEventCategoryDto,
+      );
+
+      // Guardar la nueva categoría
+      return await this.eventCategoryRepository.save(newCategory);
+    } catch (error) {
+      throw new Error(`Error al crear la categoría: ${error.message}`);
+    }
   }
 
-  findAll() {
-    return `This action returns all eventCategory`;
+  async findAll(): Promise<EventCategory[]> {
+    try {
+      return await this.eventCategoryRepository.find();
+    } catch (error) {
+      throw new Error(`Error al obtener las categorías: ${error.message}`);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} eventCategory`;
+  async findOne(id: number): Promise<EventCategory> {
+    try {
+      const category = await this.eventCategoryRepository.findOne({
+        where: { idEventCategory: id },
+      });
+
+      if (!category) {
+        throw new NotFoundException(`Categoría con ID ${id} no encontrada`);
+      }
+
+      return category;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new Error(`Error al buscar la categoría: ${error.message}`);
+    }
   }
 
-  update(id: number, updateEventCategoryDto: UpdateEventCategoryDto) {
-    return `This action updates a #${id} eventCategory`;
+  async update(
+    id: number,
+    updateEventCategoryDto: UpdateEventCategoryDto,
+  ): Promise<EventCategory> {
+    try {
+      // Verificar si la categoría existe
+      const category = await this.findOne(id);
+
+      // Si se intenta actualizar el nombre, verificar que no exista otro con ese nombre
+      if (updateEventCategoryDto.name) {
+        const existingCategory = await this.eventCategoryRepository.findOne({
+          where: {
+            name: updateEventCategoryDto.name,
+            idEventCategory: Not(id), // Excluir la categoría actual
+          },
+        });
+
+        if (existingCategory) {
+          throw new Error('Ya existe otra categoría con este nombre');
+        }
+      }
+
+      // Actualizar los campos de la categoría
+      Object.assign(category, updateEventCategoryDto);
+
+      // Guardar los cambios
+      return await this.eventCategoryRepository.save(category);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new Error(`Error al actualizar la categoría: ${error.message}`);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} eventCategory`;
+  async remove(id: number): Promise<void> {
+    try {
+      // Verificar si la categoría existe
+      const category = await this.findOne(id);
+
+      // Eliminar la categoría
+      await this.eventCategoryRepository.remove(category);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new Error(`Error al eliminar la categoría: ${error.message}`);
+    }
   }
 }
