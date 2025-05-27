@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../user/dto/create-user.dto';
@@ -36,7 +36,7 @@ export class AuthService {
         const user = await this.userService.findByUsername(userLoginDto.username);
 
         if (user === null) {
-            throw new Error('User not found');
+            throw new NotFoundException('User not found');
         }
 
         const userRol = await this.userRolService.findUserRolByUserId(user.idUser);

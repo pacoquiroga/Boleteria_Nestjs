@@ -14,9 +14,12 @@ async function bootstrap() {
         'http://localhost:4200',
         'http://localhost:8080',
       ];
-      if (allowedOrigins.includes(origin)) {
+      // Permitir si origin está en la lista o si no hay origin (Postman, curl, etc.)
+      if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
+      // Si quieres, puedes devolver un error aquí para otros origins
+      return callback(new Error('Not allowed by CORS'));
     },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     preflightContinue: false,

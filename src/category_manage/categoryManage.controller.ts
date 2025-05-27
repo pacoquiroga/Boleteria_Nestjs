@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { CategoryManageService } from './categoryManage.service';
 import { CreateCategoryManageDto } from './dto/create-categoryManage.dto';
 import { UpdateCategoryManageDto } from './dto/update-categoryManage.dto';
@@ -23,12 +31,25 @@ export class CategoryManageController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCategoryManageDto: UpdateCategoryManageDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateCategoryManageDto: UpdateCategoryManageDto,
+  ) {
     return this.categoryManageService.update(+id, updateCategoryManageDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.categoryManageService.remove(+id);
+  }
+
+  @Get('category/:idCategory')
+  findByEventCategory(@Param('idCategory') idCategory: string) {
+    return this.categoryManageService.findByEventCategory(+idCategory);
+  }
+
+  @Get('event/:idEvent')
+  findByEventEntity(@Param('idEvent') idEvent: string) {
+    return this.categoryManageService.findByEventEntity(+idEvent);
   }
 }

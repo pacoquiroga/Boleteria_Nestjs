@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -34,8 +34,11 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    const existingUserByEmail = await this.userRepository.findOne({
+    const existingUserEmail = await this.userRepository.findOne({
       where: { email: createUserDto.email },
+    });
+    const existingUserUsername = await this.userRepository.findOne({
+      where: { username: createUserDto.username },
     });
 
     const existingUserByUsername = await this.userRepository.findOne({
@@ -54,6 +57,17 @@ export class UserService {
       where: { rolName: createUserDto.rol },
     });
 
+<<<<<<< HEAD
+=======
+    if (existingUserUsername) {
+      throw new Error('User with this username already exists');
+    }
+
+    if (existingUserEmail) {
+      throw new Error('User with this email already exists');
+    }
+
+>>>>>>> e3fa62d01682f1daefc52ee1f98e22e0d262182b
     if (!existingRol) {
       throw new Error('Rol does not exist');
     }
@@ -98,10 +112,11 @@ export class UserService {
     try {
       const user = await this.userRepository.findOne({ where: { idUser: id } });
       if (!user) {
-        throw new Error('User not found');
+        throw new NotFoundException('User not found');
       }
       return user;
     } catch (error) {
+      if (error instanceof NotFoundException) throw error;
       throw new Error('Error fetching user: ' + error.message);
     }
   }
@@ -110,10 +125,11 @@ export class UserService {
     try {
       const user = await this.userRepository.findOne({ where: { username } });
       if (!user) {
-        throw new Error('User not found');
+        throw new NotFoundException('User not found');
       }
       return user;
     } catch (error) {
+      if (error instanceof NotFoundException) throw error;
       throw new Error('Error fetching user: ' + error.message);
     }
   }
@@ -123,7 +139,7 @@ export class UserService {
       const user = await this.userRepository.findOne({ where: { idUser: id } });
 
       if (!user) {
-        throw new Error('User not found');
+        throw new NotFoundException('User not found');
       }
 
       // Si se actualiza el email o username, verificar que no exista otro usuario con los mismos datos
@@ -152,6 +168,7 @@ export class UserService {
       await this.userRepository.update(id, updateUserDto);
       return await this.userRepository.findOne({ where: { idUser: id } });
     } catch (error) {
+      if (error instanceof NotFoundException) throw error;
       throw new Error('Error updating user: ' + error.message);
     }
   }
@@ -161,12 +178,13 @@ export class UserService {
       const user = await this.userRepository.findOne({ where: { idUser: id } });
 
       if (!user) {
-        throw new Error('User not found');
+        throw new NotFoundException('User not found');
       }
 
       await this.userRepository.delete(id);
       return { message: 'User deleted successfully' };
     } catch (error) {
+      if (error instanceof NotFoundException) throw error;
       throw new Error('Error deleting user: ' + error.message);
     }
   }

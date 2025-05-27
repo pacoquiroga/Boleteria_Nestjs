@@ -26,7 +26,10 @@ describe('AuthController', () => {
         UserService,
         UserRolService,
         RolService,
-        { provide: JwtService, useValue: { signAsync: jest.fn().mockResolvedValue('mocked_token') } },
+        {
+          provide: JwtService,
+          useValue: { signAsync: jest.fn().mockResolvedValue('mocked_token') },
+        },
         { provide: getRepositoryToken(User), useClass: Repository },
         { provide: getRepositoryToken(UserRol), useClass: Repository },
         { provide: getRepositoryToken(Rol), useClass: Repository },
@@ -60,7 +63,26 @@ describe('AuthController', () => {
         },
       };
       (authController as any).signup = jest.fn().mockResolvedValue(result);
-      await expect(authController.signup(createUserDto)).resolves.toEqual(result);
+      await expect(authController.signup(createUserDto)).resolves.toEqual(
+        result,
+      );
+    });
+
+    it('should throw an error if email is already registered', async () => {
+      const createUserDto: CreateUserDto = {
+        name: 'Test',
+        lastname: 'User',
+        username: 'testuser2',
+        email: 'test@example.com',
+        password: 'testpass',
+        phone: '1234567890',
+        rol: RoleType.USER,
+      };
+      const error = new Error('User with this email already exists');
+      (authController as any).signup = jest.fn().mockRejectedValue(error);
+      await expect(authController.signup(createUserDto)).rejects.toThrow(
+        'User with this email already exists',
+      );
     });
   });
 
@@ -83,6 +105,18 @@ describe('AuthController', () => {
       };
       (authController as any).login = jest.fn().mockResolvedValue(result);
       await expect(authController.login(loginDto)).resolves.toEqual(result);
+    });
+
+    it('should throw an error if credentials are invalid', async () => {
+      const loginDto: LoginDto = {
+        username: 'wronguser',
+        password: 'wrongpass',
+      };
+      const error = new Error('Invalid credentials');
+      (authController as any).login = jest.fn().mockRejectedValue(error);
+      await expect(authController.login(loginDto)).rejects.toThrow(
+        'Invalid credentials',
+      );
     });
   });
 });

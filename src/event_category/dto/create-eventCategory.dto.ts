@@ -1,7 +1,11 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateEventCategoryDto {
-    @IsString({message: "El nombre de la categoría debe ser una cadena"})
-    @IsNotEmpty({message: "El nombre de la categoría no puede estar vacío"})
-    name: string;
+  @IsNotEmpty({ message: 'El nombre de la categoría es requerido' })
+  @IsString({ message: 'El nombre de la categoría debe ser un texto' })
+  name: string;
+
+  @IsOptional()
+  @IsString({ message: 'La descripción de la categoría debe ser un texto' })
+  description: string;
 }

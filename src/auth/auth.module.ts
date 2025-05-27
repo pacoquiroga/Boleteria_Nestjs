@@ -15,7 +15,7 @@ import { UserRolModule } from 'src/user_rol/user_rol.module';
     PassportModule,
     JwtModule.register({
       secret: 'epale', 
-      signOptions: { expiresIn: '1h' }, 
+      signOptions: { expiresIn: '10m' }, 
     }),
   ],
   controllers: [AuthController],
