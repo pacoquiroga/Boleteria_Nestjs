@@ -11,8 +11,5 @@ export class Rol {
 
   @Column({ type: 'varchar', length: 100, name: 'rol_description' })
   rolDescription: string;
-  
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'id_user' })
-  user: User;
+
 }

@@ -10,7 +10,9 @@ export class EventCategoryService {
   constructor(
     @InjectRepository(EventCategory)
     private eventCategoryRepository: Repository<EventCategory>,
-  ) {}
+  ) {
+    this.seedDefaultCategories();
+  }
 
   async create(
     createEventCategoryDto: CreateEventCategoryDto,
@@ -111,6 +113,30 @@ export class EventCategoryService {
         throw error;
       }
       throw new Error(`Error al eliminar la categoría: ${error.message}`);
+    }
+  }
+
+  async seedDefaultCategories(): Promise<void> {
+    const defaultCategories = [
+      { name: 'Concierto', description: 'Eventos musicales en vivo' },
+      { name: 'Teatro', description: 'Obras y espectáculos teatrales' },
+      { name: 'Deporte', description: 'Eventos deportivos' },
+      { name: 'Conferencia', description: 'Charlas y conferencias' },
+      { name: 'Festival', description: 'Festivales culturales y artísticos' },
+      { name: 'Exposición', description: 'Exhibiciones de arte y cultura' },
+      { name: 'Feria', description: 'Ferias comerciales y de entretenimiento' },
+      { name: 'Cine', description: 'Proyecciones de películas y documentales' },
+      { name: 'Gastronomía', description: 'Eventos relacionados con la comida' },
+      { name: 'Literatura', description: 'Lecturas y presentaciones literarias' },
+    ];
+    for (const category of defaultCategories) {
+      const exists = await this.eventCategoryRepository.findOne({
+        where: { name: category.name },
+      });
+      if (!exists) {
+        console.log("Categorias creadas")
+        await this.eventCategoryRepository.save(category);
+      }
     }
   }
 }

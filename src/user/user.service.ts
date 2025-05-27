@@ -45,7 +45,7 @@ export class UserService {
       where: { username: createUserDto.username },
     });
 
-    if (existingUserByEmail) {
+    if (existingUserEmail) {
       throw new Error('A user with this email already exists');
     }
 
@@ -57,8 +57,6 @@ export class UserService {
       where: { rolName: createUserDto.rol },
     });
 
-<<<<<<< HEAD
-=======
     if (existingUserUsername) {
       throw new Error('User with this username already exists');
     }
@@ -67,7 +65,6 @@ export class UserService {
       throw new Error('User with this email already exists');
     }
 
->>>>>>> e3fa62d01682f1daefc52ee1f98e22e0d262182b
     if (!existingRol) {
       throw new Error('Rol does not exist');
     }

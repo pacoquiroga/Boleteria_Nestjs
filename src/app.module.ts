@@ -12,22 +12,31 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoryManageModule } from './category_manage/categoryManage.module';
 import { AuthModule } from './auth/auth.module';
 import { UserRolModule } from './user_rol/user_rol.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [UserModule, RolModule, EventCategoryModule, TicketCategoryModule, TicketModule, TransactionModule, EventEntityModule,
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    UserModule,
+    RolModule,
+    EventCategoryModule,
+    TicketCategoryModule,
+    TicketModule,
+    TransactionModule,
+    EventEntityModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'admin',
-      password: 'admin',
-      database: 'BoleteriaDB',
+      host: process.env.DB_HOST,
+      port: +(process.env.DB_PORT || 5432),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
       autoLoadEntities: true,
       synchronize: true,
     }),
     CategoryManageModule,
     AuthModule,
-    UserRolModule
+    UserRolModule,
   ],
   controllers: [AppController],
   providers: [AppService],
