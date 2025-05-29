@@ -45,7 +45,7 @@ export class UserRolService {
 
   async findOne(id: number) {
     const userRol = await this.userRolRepository.findOne({
-      where: { idUserRol: id },
+      where: { id },
       relations: ['user', 'rol'],
     });
     if (!userRol) {
@@ -73,7 +73,7 @@ export class UserRolService {
       Object.assign(existingUserRol, updateUserRolDto);
       await this.userRolRepository.save(existingUserRol);
       return await this.userRolRepository.findOne({
-        where: { idUserRol: id },
+        where: { id },
         relations: ['user', 'rol'],
       });
     } catch (error) {
@@ -83,13 +83,25 @@ export class UserRolService {
 
   async findUserRolByUserId(id: number) {
     const userRol = await this.userRolRepository.findOne({
-      where: { user: { idUser: id } },
+      where: { user: { id } },
       relations: ['user', 'rol'],
     });
     if (!userRol) {
       throw new Error('UserRol not found');
     }
     return userRol;
+  }
+
+  async findUserByRoleName(roleName: string) {
+    try {
+      return await this.userRolRepository.findOne({
+        where: { rol: { rolName: roleName } },
+        relations: ['user', 'rol'],
+      });
+    } catch (error) {
+      console.error(`Error finding user by role name ${roleName}:`, error);
+      return null;
+    }
   }
 
   remove(id: number) {

@@ -6,10 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { EventEntityService } from './eventEntity.service';
 import { CreateEventEntityDto } from './dto/create-eventEntity.dto';
 import { UpdateEventEntityDto } from './dto/update-eventEntity.dto';
+import { EventState } from './enums/event-state.enum';
+import { EventEntity } from './entities/eventEntity.entity';
+import { PaginationRequest } from 'src/utils/dto/pagination.dto';
 
 @Controller('event-entity')
 export class EventEntityController {
@@ -23,6 +27,11 @@ export class EventEntityController {
   @Get()
   findAll() {
     return this.eventEntityService.findAll();
+  }
+
+  @Post('paginated')
+  getPaginated(@Body() pagination: PaginationRequest<EventEntity>) {
+    return this.eventEntityService.getPaginated(pagination);
   }
 
   @Get(':id')
@@ -49,7 +58,7 @@ export class EventEntityController {
   }
 
   @Get('state/:state')
-  findByState(@Param('state') state: string) {
+  findByState(@Param('state') state: EventState) {
     return this.eventEntityService.findByState(state);
   }
 }

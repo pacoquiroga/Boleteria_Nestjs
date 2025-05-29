@@ -85,8 +85,8 @@ export class UserService {
       console.log('User created:', savedUser);
 
       const userRol: CreateUserRolDto = {
-        idRol: existingRol.idRol,
-        idUser: savedUser.idUser,
+        idRol: existingRol.id,
+        idUser: savedUser.id,
         since: new Date(),
       };
       const savedUserRol = await this.userRolService.create(userRol);
@@ -107,7 +107,7 @@ export class UserService {
 
   async findOne(id: number): Promise<User> {
     try {
-      const user = await this.userRepository.findOne({ where: { idUser: id } });
+      const user = await this.userRepository.findOne({ where: { id: id } });
       if (!user) {
         throw new NotFoundException('User not found');
       }
@@ -133,7 +133,7 @@ export class UserService {
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     try {
-      const user = await this.userRepository.findOne({ where: { idUser: id } });
+      const user = await this.userRepository.findOne({ where: { id: id } });
 
       if (!user) {
         throw new NotFoundException('User not found');
@@ -143,8 +143,8 @@ export class UserService {
       if (updateUserDto.email || updateUserDto.username) {
         const existingUser = await this.userRepository.findOne({
           where: [
-            { email: updateUserDto.email, idUser: Not(id) },
-            { username: updateUserDto.username, idUser: Not(id) },
+            { email: updateUserDto.email, id: Not(id) },
+            { username: updateUserDto.username, id: Not(id) },
           ],
         });
 
@@ -163,7 +163,7 @@ export class UserService {
       }
 
       await this.userRepository.update(id, updateUserDto);
-      return await this.userRepository.findOne({ where: { idUser: id } });
+      return await this.userRepository.findOne({ where: { id: id } });
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       throw new Error('Error updating user: ' + error.message);
@@ -172,7 +172,7 @@ export class UserService {
 
   async remove(id: number) {
     try {
-      const user = await this.userRepository.findOne({ where: { idUser: id } });
+      const user = await this.userRepository.findOne({ where: { id: id } });
 
       if (!user) {
         throw new NotFoundException('User not found');
@@ -183,6 +183,19 @@ export class UserService {
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       throw new Error('Error deleting user: ' + error.message);
+    }
+  }
+
+  async findUserByRole(roleName: string): Promise<User | null> {
+    try {
+      const userRol = await this.userRolService.findUserByRoleName(roleName);
+      if (!userRol) {
+        return null;
+      }
+      return userRol.user;
+    } catch (error) {
+      console.error(`Error finding user by role ${roleName}:`, error);
+      return null;
     }
   }
 }

@@ -3,8 +3,8 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 't
 
 @Entity('ticket_category')
 export class TicketCategory {
-  @PrimaryGeneratedColumn({ name: 'id_ticket_category' })
-  idTicketCategory: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
   @Column({ type: 'varchar', length: 30 })
   name: string;
@@ -25,6 +25,6 @@ export class TicketCategory {
   endDate: Date;
 
   @ManyToOne(() => EventEntity)
-  @JoinColumn({ name: 'id_event' })
+  @JoinColumn({ name: 'event_id' })
   event: EventEntity;
 }

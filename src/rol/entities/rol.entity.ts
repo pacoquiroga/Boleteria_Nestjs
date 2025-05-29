@@ -3,8 +3,8 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity('rol')
 export class Rol {
-  @PrimaryGeneratedColumn({ name: 'id_rol' })
-  idRol: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
   
   @Column({ type: 'varchar', length: 50, name: 'rol_name' })
   rolName: string;

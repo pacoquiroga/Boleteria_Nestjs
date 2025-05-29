@@ -4,14 +4,14 @@ import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('category_manage')
 export class CategoryManage {
-  @PrimaryGeneratedColumn({ name: 'id_category_manage' })
-  idCategoryManage: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
   @ManyToOne(() => EventCategory)
-  @JoinColumn({ name: 'id_event_category' })
+  @JoinColumn({ name: 'event_category_id' })
   eventCategory: EventCategory;
 
   @ManyToOne(() => EventEntity)
-  @JoinColumn({ name: 'id_event' })
+  @JoinColumn({ name: 'event_id' })
   eventEntity: EventEntity;
 }

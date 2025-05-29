@@ -1,10 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
+import { EventState } from '../enums/event-state.enum';
 
 @Entity('event_entity')
 export class EventEntity {
-  @PrimaryGeneratedColumn({ name: 'id_event' })
-  idEvent: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
   @Column({ type: 'varchar', length: 30 })
   name: string;
@@ -27,10 +28,15 @@ export class EventEntity {
   @Column({ type: 'integer' })
   capacity: number;
 
-  @Column({ type: 'varchar', length: 20 })
-  state: string;
+  @Column({ 
+    type: 'varchar', 
+    length: 20,
+    enum: EventState,
+    default: EventState.ACTIVE 
+  })
+  state: EventState;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'id_user' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }

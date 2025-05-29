@@ -3,8 +3,8 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 't
 
 @Entity('transaction')
 export class Transaction {
-  @PrimaryGeneratedColumn({ name: 'id_transaction' })
-  idTransaction: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, name: 'total_amount' })
   totalAmount: number;
@@ -19,6 +19,6 @@ export class Transaction {
   paymentMethod: string;
 
   @ManyToOne(() => EventEntity)
-  @JoinColumn({ name: 'id_event' })
+  @JoinColumn({ name: 'event_id' })
   event: EventEntity;
 }

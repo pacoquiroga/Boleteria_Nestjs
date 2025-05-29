@@ -3,8 +3,8 @@ import { Rol } from '../../rol/entities/rol.entity';
 
 @Entity('user')
 export class User {
-  @PrimaryGeneratedColumn({ name: 'id_user' })
-  idUser: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
 
   @Column({ type: 'varchar', length: 30 })
   name: string;
@@ -28,7 +28,7 @@ export class User {
   phone: string;
 
   @Column({ name: 'registration_day', type: 'date', default: () => 'CURRENT_DATE' })
-  registration_day: Date;
+  registrationDay: Date;
 
   @Column({name: 'last_login',type: 'timestamp',default: () => 'CURRENT_TIMESTAMP',comment: 'Fecha y hora del último inicio de sesión'})
   lastLogin: Date;

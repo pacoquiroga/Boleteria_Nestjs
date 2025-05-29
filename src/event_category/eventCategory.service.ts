@@ -50,7 +50,7 @@ export class EventCategoryService {
   async findOne(id: number): Promise<EventCategory> {
     try {
       const category = await this.eventCategoryRepository.findOne({
-        where: { idEventCategory: id },
+        where: { id },
       });
 
       if (!category) {
@@ -79,7 +79,7 @@ export class EventCategoryService {
         const existingCategory = await this.eventCategoryRepository.findOne({
           where: {
             name: updateEventCategoryDto.name,
-            idEventCategory: Not(id), // Excluir la categoría actual
+            id: Not(id), // Excluir la categoría actual
           },
         });
 

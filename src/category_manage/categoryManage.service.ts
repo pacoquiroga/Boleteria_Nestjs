@@ -1,9 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Not } from 'typeorm';
 import { CreateCategoryManageDto } from './dto/create-categoryManage.dto';
 import { UpdateCategoryManageDto } from './dto/update-categoryManage.dto';
 import { CategoryManage } from './entities/categoryManage.entity';
+import { EventCategory } from '../event_category/entities/eventCategory.entity';
+import { EventEntity } from '../event_entity/entities/eventEntity.entity';
 import { EventCategoryService } from '../event_category/eventCategory.service';
 import { EventEntityService } from '../event_entity/eventEntity.service';
 
@@ -12,199 +14,133 @@ export class CategoryManageService {
   constructor(
     @InjectRepository(CategoryManage)
     private categoryManageRepository: Repository<CategoryManage>,
+    @InjectRepository(EventCategory)
+    private eventCategoryRepository: Repository<EventCategory>,
+    @InjectRepository(EventEntity)
+    private eventEntityRepository: Repository<EventEntity>,
     private eventCategoryService: EventCategoryService,
+    @Inject(forwardRef(() => EventEntityService))
     private eventEntityService: EventEntityService,
   ) {}
 
-  async create(entity: CreateCategoryManageDto): Promise<CategoryManage> {
+  async create(createCategoryManageDto: CreateCategoryManageDto) {
     try {
-      // Verificar si la categoría existe
-      const eventCategory = await this.eventCategoryService.findOne(
-        entity.idEventCategory,
-      );
-
-      // Verificar si el evento existe
-      const eventEntity = await this.eventEntityService.findOne(
-        entity.idEventEntity,
-      );
-
-      // Verificar si ya existe una asociación entre esta categoría y este evento
-      const existingRelation = await this.categoryManageRepository.findOne({
-        where: {
-          eventCategory: {
-            idEventCategory: entity.idEventCategory,
-          },
-          eventEntity: { idEvent: entity.idEventEntity },
-        },
-        relations: ['eventCategory', 'eventEntity'],
+      const eventCategory = await this.eventCategoryRepository.findOne({
+        where: { id: createCategoryManageDto.idEventCategory },
       });
 
-      if (existingRelation) {
-        throw new Error(
-          'Ya existe una asociación entre esta categoría y este evento',
-        );
+      if (!eventCategory) {
+        throw new Error('Categoría de evento no encontrada');
       }
 
-      // Crear una nueva instancia de la asociación
-      const newCategoryManage = this.categoryManageRepository.create({
+      const eventEntity = await this.eventEntityRepository.findOne({
+        where: { id: createCategoryManageDto.idEventEntity },
+      });
+
+      if (!eventEntity) {
+        throw new Error('Evento no encontrado');
+      }
+
+      const categoryManage = this.categoryManageRepository.create({
         eventCategory,
         eventEntity,
       });
 
-      // Guardar la nueva asociación
-      return await this.categoryManageRepository.save(newCategoryManage);
+      return await this.categoryManageRepository.save(categoryManage);
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new Error(`Error al crear la asociación: ${error.message}`);
+      throw new Error(`Error al crear la relación: ${error.message}`);
     }
   }
 
-  async findAll(): Promise<CategoryManage[]> {
+  async findAll() {
     try {
       return await this.categoryManageRepository.find({
         relations: ['eventCategory', 'eventEntity'],
       });
     } catch (error) {
-      throw new Error(`Error al obtener las asociaciones: ${error.message}`);
+      throw new Error(`Error al obtener las relaciones: ${error.message}`);
     }
   }
 
-  async findOne(id: number): Promise<CategoryManage> {
+  async findOne(id: number) {
     try {
       const categoryManage = await this.categoryManageRepository.findOne({
-        where: { idCategoryManage: id },
+        where: { id },
         relations: ['eventCategory', 'eventEntity'],
       });
 
       if (!categoryManage) {
-        throw new NotFoundException(`Asociación con ID ${id} no encontrada`);
+        throw new Error('Relación no encontrada');
       }
 
       return categoryManage;
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new Error(`Error al buscar la asociación: ${error.message}`);
+      throw new Error(`Error al obtener la relación: ${error.message}`);
     }
   }
 
-  async update(
-    id: number,
-    entity: UpdateCategoryManageDto,
-  ): Promise<CategoryManage> {
+  async update(id: number, updateCategoryManageDto: UpdateCategoryManageDto) {
     try {
-      // Verificar si la asociación existe
       const categoryManage = await this.findOne(id);
 
-      // Si se proporciona una nueva categoría, verificar que existe
-      if (entity.idEventCategory) {
-        const eventCategory = await this.eventCategoryService.findOne(
-          entity.idEventCategory,
-        );
+      if (updateCategoryManageDto.idEventCategory) {
+        const eventCategory = await this.eventCategoryRepository.findOne({
+          where: { id: updateCategoryManageDto.idEventCategory },
+        });
+
+        if (!eventCategory) {
+          throw new Error('Categoría de evento no encontrada');
+        }
+
         categoryManage.eventCategory = eventCategory;
       }
 
-      // Si se proporciona un nuevo evento, verificar que existe
-      if (entity.idEventEntity) {
-        const eventEntity = await this.eventEntityService.findOne(
-          entity.idEventEntity,
-        );
+      if (updateCategoryManageDto.idEventEntity) {
+        const eventEntity = await this.eventEntityRepository.findOne({
+          where: { id: updateCategoryManageDto.idEventEntity },
+        });
+
+        if (!eventEntity) {
+          throw new Error('Evento no encontrado');
+        }
+
         categoryManage.eventEntity = eventEntity;
       }
 
-      // Verificar si ya existe otra asociación con la misma combinación
-      if (entity.idEventCategory || entity.idEventEntity) {
-        const categoryId =
-          entity.idEventCategory ||
-          categoryManage.eventCategory.idEventCategory;
-        const entityId =
-          entity.idEventEntity || categoryManage.eventEntity.idEvent;
-
-        const existingRelation = await this.categoryManageRepository.findOne({
-          where: {
-            idCategoryManage: Not(id),
-            eventCategory: { idEventCategory: categoryId },
-            eventEntity: { idEvent: entityId },
-          },
-          relations: ['eventCategory', 'eventEntity'],
-        });
-
-        if (existingRelation) {
-          throw new Error(
-            'Ya existe otra asociación con esta categoría y este evento',
-          );
-        }
-      }
-
-      // Guardar los cambios
       return await this.categoryManageRepository.save(categoryManage);
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new Error(`Error al actualizar la asociación: ${error.message}`);
+      throw new Error(`Error al actualizar la relación: ${error.message}`);
     }
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number) {
     try {
-      // Verificar si la asociación existe
       const categoryManage = await this.findOne(id);
-
-      // Eliminar la asociación
       await this.categoryManageRepository.remove(categoryManage);
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new Error(`Error al eliminar la asociación: ${error.message}`);
+      throw new Error(`Error al eliminar la relación: ${error.message}`);
     }
   }
 
-  // Métodos adicionales útiles
-
-  async findByEventCategory(categoryId: number): Promise<CategoryManage[]> {
+  async findByEventEntity(eventEntityId: number) {
     try {
-      // Verificar si la categoría existe
-      await this.eventCategoryService.findOne(categoryId);
-
       return await this.categoryManageRepository.find({
-        where: {
-          eventCategory: { idEventCategory: categoryId },
-        },
+        where: { eventEntity: { id: eventEntityId } },
         relations: ['eventCategory', 'eventEntity'],
       });
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new Error(
-        `Error al buscar asociaciones por categoría: ${error.message}`,
-      );
+      throw new Error(`Error al buscar por evento: ${error.message}`);
     }
   }
 
-  async findByEventEntity(eventId: number): Promise<CategoryManage[]> {
+  async findByEventCategory(eventCategoryId: number) {
     try {
-      // Verificar si el evento existe
-      await this.eventEntityService.findOne(eventId);
-
       return await this.categoryManageRepository.find({
-        where: {
-          eventEntity: { idEvent: eventId },
-        },
+        where: { eventCategory: { id: eventCategoryId } },
         relations: ['eventCategory', 'eventEntity'],
       });
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new Error(
-        `Error al buscar asociaciones por evento: ${error.message}`,
-      );
+      throw new Error(`Error al buscar por categoría: ${error.message}`);
     }
   }
 }

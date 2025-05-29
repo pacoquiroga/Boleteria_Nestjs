@@ -4,8 +4,8 @@ import { Transaction } from '../../transaction/entities/transaction.entity';
 
 @Entity('ticket')
 export class Ticket {
-    @PrimaryGeneratedColumn({ name: 'id_ticket' })
-    idTicket: number;
+    @PrimaryGeneratedColumn({ name: 'id' })
+    id: number;
 
     @Column({ type: 'varchar', length: 300, name: 'qr_code' })
     qrCode: string;
@@ -19,8 +19,8 @@ export class Ticket {
     @Column({ type: 'timestamp', name: 'use_date', nullable: true })
     useDate: Date;
 
-    @Column({ type: 'integer', name: 'id_owner' })
-    idOwner: number;
+    @Column({ type: 'integer', name: 'owner_id' })
+    ownerId: number;
 
     @Column({ type: 'varchar', length: 100, name: 'owner_email' })
     ownerEmail: string;
@@ -35,10 +35,10 @@ export class Ticket {
     ownerCi: string;
 
     @ManyToOne(() => TicketCategory)
-    @JoinColumn({ name: 'id_ticket_category' })
+    @JoinColumn({ name: 'ticket_category_id' })
     ticketCategory: TicketCategory;
 
     @ManyToOne(() => Transaction)
-    @JoinColumn({ name: 'id_transaction' })
+    @JoinColumn({ name: 'transaction_id' })
     transaction: Transaction;
 }

@@ -4,8 +4,8 @@ import { Rol } from '../../rol/entities/rol.entity';
 
 @Entity('user_rol')
 export class UserRol {
-  @PrimaryGeneratedColumn({ name: 'id_user_rol' })
-  idUserRol: number;
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
   
   @Column({ type: 'date', name: 'since' })
   since: Date;
@@ -14,10 +14,10 @@ export class UserRol {
   until: Date;
   
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'id_user' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
   
   @ManyToOne(() => Rol)
-  @JoinColumn({ name: 'id_rol' })
+  @JoinColumn({ name: 'rol_id' })
   rol: Rol;
 }

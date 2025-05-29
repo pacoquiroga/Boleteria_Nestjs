@@ -18,11 +18,11 @@ export class AuthService {
 
     async signup(userCreateDto: CreateUserDto): Promise<AuthToken> {
         const user = await this.userService.create(userCreateDto);
-        const payload = { sub: user.idUser, username: user.username };
+        const payload = { sub: user.id, username: user.username };
         return {
             access_token: await this.jwtService.signAsync(payload),
             user: {
-                id: user.idUser,
+                id: user.id,
                 username: user.username,
                 name: user.name,
                 lastname: user.lastname,
@@ -39,9 +39,9 @@ export class AuthService {
             throw new NotFoundException('User not found');
         }
 
-        const userRol = await this.userRolService.findUserRolByUserId(user.idUser);
+        const userRol = await this.userRolService.findUserRolByUserId(user.id);
 
-        const rol = await this.rolService.findOne(userRol.rol.idRol);
+        const rol = await this.rolService.findOne(userRol.rol.id);
 
         const isPasswordValid = await bcrypt.compare(
             user.salt + userLoginDto.password,
@@ -56,13 +56,13 @@ export class AuthService {
             throw new Error('Invalid password');
         }
 
-        const payload = { sub: user.idUser, username: user.username };
-        await this.userService.update(user.idUser, { lastLogin: new Date() });
+        const payload = { sub: user.id, username: user.username };
+        await this.userService.update(user.id, { lastLogin: new Date() });
 
         return {
             access_token: await this.jwtService.signAsync(payload),
             user: {
-                id: user.idUser,
+                id: user.id,
                 username: user.username,
                 name: user.name,
                 lastname: user.lastname,
