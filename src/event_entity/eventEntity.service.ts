@@ -18,7 +18,7 @@ export class EventEntityService implements OnModuleInit {
     private userService: UserService,
     @Inject(forwardRef(() => CategoryManageService))
     private categoryManageService: CategoryManageService,
-  ) {}
+  ) { }
 
   async onModuleInit() {
     await this.seedDefaultEvents();
@@ -28,7 +28,7 @@ export class EventEntityService implements OnModuleInit {
     try {
       // Buscar un usuario con rol organizador
       const organizer = await this.userService.findUserByRole('organizer');
-      
+
       if (!organizer) {
         console.log('No se encontró un usuario organizador para crear eventos de prueba');
         return;
@@ -39,7 +39,7 @@ export class EventEntityService implements OnModuleInit {
           name: 'Concierto de Rock',
           date: new Date('2024-06-15'),
           hour: '20:00',
-          location: 'Estadio Principal',
+          location: { type: 'Point' as const, coordinates: [-99.1332, 19.4326] }, // Ciudad de México
           city: 'Ciudad Capital',
           description: 'Gran concierto de rock con bandas locales e internacionales',
           capacity: 5000,
@@ -50,7 +50,7 @@ export class EventEntityService implements OnModuleInit {
           name: 'Festival de Teatro',
           date: new Date('2024-07-01'),
           hour: '19:00',
-          location: 'Teatro Municipal',
+          location: { type: 'Point' as const, coordinates: [-58.3816, -34.6037] }, // Buenos Aires
           city: 'Ciudad Cultural',
           description: 'Festival anual de teatro con obras nacionales',
           capacity: 800,
@@ -61,7 +61,7 @@ export class EventEntityService implements OnModuleInit {
           name: 'Torneo de Fútbol',
           date: new Date('2024-08-10'),
           hour: '15:00',
-          location: 'Complejo Deportivo',
+          location: { type: 'Point' as const, coordinates: [-3.7038, 40.4168] }, // Madrid
           city: 'Ciudad Deportiva',
           description: 'Torneo amateur de fútbol',
           capacity: 2000,
@@ -72,7 +72,7 @@ export class EventEntityService implements OnModuleInit {
           name: 'Conferencia Tech',
           date: new Date('2024-09-20'),
           hour: '09:00',
-          location: 'Centro de Convenciones',
+          location: { type: 'Point' as const, coordinates: [-122.4194, 37.7749] }, // San Francisco
           city: 'Ciudad Tecnológica',
           description: 'Conferencia sobre las últimas tendencias en tecnología',
           capacity: 1000,
@@ -83,7 +83,7 @@ export class EventEntityService implements OnModuleInit {
           name: 'Exposición de Arte',
           date: new Date('2024-10-05'),
           hour: '10:00',
-          location: 'Galería Central',
+          location: { type: 'Point' as const, coordinates: [2.3522, 48.8566] }, // París
           city: 'Ciudad Artística',
           description: 'Exposición de artistas emergentes',
           capacity: 300,
@@ -94,7 +94,7 @@ export class EventEntityService implements OnModuleInit {
           name: 'Feria Gastronómica',
           date: new Date('2024-11-15'),
           hour: '11:00',
-          location: 'Plaza Principal',
+          location: { type: 'Point' as const, coordinates: [-46.6333, -23.5505] }, // São Paulo
           city: 'Ciudad Gastronómica',
           description: 'Feria con los mejores restaurantes de la ciudad',
           capacity: 1500,
@@ -105,7 +105,7 @@ export class EventEntityService implements OnModuleInit {
           name: 'Festival de Cine',
           date: new Date('2024-12-01'),
           hour: '18:00',
-          location: 'Cineplex Central',
+          location: { type: 'Point' as const, coordinates: [139.6917, 35.6895] }, // Tokio
           city: 'Ciudad del Cine',
           description: 'Festival de cine independiente',
           capacity: 600,
@@ -116,7 +116,7 @@ export class EventEntityService implements OnModuleInit {
           name: 'Feria del Libro',
           date: new Date('2025-01-20'),
           hour: '09:00',
-          location: 'Centro Cultural',
+          location: { type: 'Point' as const, coordinates: [-0.1276, 51.5074] }, // Londres
           city: 'Ciudad Literaria',
           description: 'Feria anual del libro con autores nacionales e internacionales',
           capacity: 2000,
@@ -127,7 +127,7 @@ export class EventEntityService implements OnModuleInit {
           name: 'Concierto Sinfónico',
           date: new Date('2025-02-14'),
           hour: '20:00',
-          location: 'Auditorio Principal',
+          location: { type: 'Point' as const, coordinates: [13.4050, 52.5200] }, // Berlín
           city: 'Ciudad Musical',
           description: 'Concierto de la orquesta sinfónica',
           capacity: 1200,
@@ -138,7 +138,7 @@ export class EventEntityService implements OnModuleInit {
           name: 'Festival Multicultural',
           date: new Date('2025-03-01'),
           hour: '12:00',
-          location: 'Parque Central',
+          location: { type: 'Point' as const, coordinates: [151.2093, -33.8688] }, // Sídney
           city: 'Ciudad Multicultural',
           description: 'Festival que celebra la diversidad cultural',
           capacity: 3000,
@@ -146,6 +146,7 @@ export class EventEntityService implements OnModuleInit {
           categories: [5, 9]
         }
       ];
+
 
       for (const template of eventTemplates) {
         // Verificar si el evento ya existe
@@ -155,11 +156,12 @@ export class EventEntityService implements OnModuleInit {
 
         if (!existingEvent) {
           // Crear el evento
+          const { categories, ...eventData } = template;
           const newEvent = this.eventEntityRepository.create({
-            ...template,
-            user: organizer
+            ...eventData,
+            user: organizer,
           });
-          
+
           const savedEvent = await this.eventEntityRepository.save(newEvent);
           console.log(`Evento creado: ${savedEvent.name}`);
 

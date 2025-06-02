@@ -6,8 +6,19 @@ import {
   IsString,
   IsDateString,
   Matches,
+  ValidateNested,
 } from 'class-validator';
 import { EventState } from '../enums/event-state.enum';
+import { Type } from 'class-transformer';
+import { Point } from 'geojson';
+
+class PointDto {
+  @IsString()
+  type: 'Point';
+
+  @IsNumber({}, { each: true })
+  coordinates: [number, number];
+}
 
 export class CreateEventEntityDto {
   @IsNotEmpty({ message: 'El nombre del evento es requerido' })
@@ -25,8 +36,9 @@ export class CreateEventEntityDto {
   hour: string;
 
   @IsNotEmpty({ message: 'La locación del evento es requerida' })
-  @IsString({ message: 'La locación del evento debe ser un texto' })
-  location: string;
+  @ValidateNested()
+  @Type(() => PointDto)
+  location: PointDto;
 
   @IsNotEmpty({ message: 'La ciudad del evento es requerida' })
   @IsString({ message: 'La ciudad del evento debe ser un texto' })

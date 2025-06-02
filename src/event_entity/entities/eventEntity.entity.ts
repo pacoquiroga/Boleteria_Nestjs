@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { EventState } from '../enums/event-state.enum';
+import { Point } from 'geojson';
 
 @Entity('event_entity')
 export class EventEntity {
@@ -16,8 +17,13 @@ export class EventEntity {
   @Column({ type: 'time' })
   hour: string;
 
-  @Column({ type: 'varchar', length: 50 })
-  location: string;
+  @Column({
+    type: 'geometry',
+    spatialFeatureType: 'Point',
+    srid: 4326,
+    nullable: false,
+  })
+  location: Point;
 
   @Column({ type: 'varchar', length: 50 })
   city: string;
