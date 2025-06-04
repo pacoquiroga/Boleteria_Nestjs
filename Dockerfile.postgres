@@ -1,0 +1,15 @@
+# Dockerfile para PostgreSQL con PostGIS
+FROM postgres:15
+
+# Instalar PostGIS
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       postgresql-15-postgis-3 \
+       postgresql-15-postgis-3-scripts \
+    && rm -rf /var/lib/apt/lists/*
+
+# Script de inicialización para habilitar PostGIS
+COPY ./init-postgis.sql /docker-entrypoint-initdb.d/
+
+# Exponer el puerto de PostgreSQL
+EXPOSE 5432

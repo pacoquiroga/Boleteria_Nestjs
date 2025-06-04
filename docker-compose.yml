@@ -2,17 +2,23 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:15
-    container_name: postgres_boleteria
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    container_name: postgres_boleteria_postgis
     restart: always
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: BoleteriaDB
+      # Variables específicas para PostGIS
+      POSTGIS_VERSION: 3
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      # Montar el script de inicialización
+      - ./init-postgis.sql:/docker-entrypoint-initdb.d/init-postgis.sql
 
 volumes:
   postgres_data:
