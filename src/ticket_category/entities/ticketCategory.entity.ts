@@ -1,5 +1,11 @@
 import { EventEntity } from '../../event_entity/entities/eventEntity.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity('ticket_category')
 export class TicketCategory {
