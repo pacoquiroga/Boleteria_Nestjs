@@ -6,12 +6,9 @@ import { TicketCategory } from './entities/ticketCategory.entity';
 import { EventEntityModule } from 'src/event_entity/eventEntity.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([TicketCategory]),
-    EventEntityModule
-  ],
+  imports: [TypeOrmModule.forFeature([TicketCategory]), EventEntityModule],
   controllers: [TicketCategoryController],
   providers: [TicketCategoryService],
-  exports: [TypeOrmModule, TicketCategoryService]
+  exports: [TypeOrmModule, TicketCategoryService],
 })
 export class TicketCategoryModule {}

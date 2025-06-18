@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { TicketCategoryService } from './ticketCategory.service';
 import { CreateTicketCategoryDto } from './dto/create-ticketCategory.dto';
 import { UpdateTicketCategoryDto } from './dto/update-ticketCategory.dto';
@@ -8,13 +16,19 @@ export class TicketCategoryController {
   constructor(private readonly ticketCategoryService: TicketCategoryService) {}
 
   @Post()
-  create(@Body() createTicketCategoryDto: CreateTicketCategoryDto) {
-    return this.ticketCategoryService.create(createTicketCategoryDto);
+  createMultipleTicketCategories(
+    @Body() createTicketCategoriesDtos: CreateTicketCategoryDto[],
+  ) {
+    return this.ticketCategoryService.createMultiple(
+      createTicketCategoriesDtos,
+    );
   }
 
-  @Get()
-  findAll() {
-    return this.ticketCategoryService.findAll();
+  @Get(':eventId')
+  findAllTicketCategoriesFromEvent(@Param('eventId') eventId: string) {
+    return this.ticketCategoryService.findAllTicketCategoriesFromEvent(
+      +eventId,
+    );
   }
 
   @Get(':id')
@@ -23,7 +37,10 @@ export class TicketCategoryController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTicketCategoryDto: UpdateTicketCategoryDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateTicketCategoryDto: UpdateTicketCategoryDto,
+  ) {
     return this.ticketCategoryService.update(+id, updateTicketCategoryDto);
   }
 

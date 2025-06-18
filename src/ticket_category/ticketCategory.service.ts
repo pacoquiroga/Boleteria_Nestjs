@@ -1,71 +1,107 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTicketCategoryDto } from './dto/create-ticketCategory.dto';
 import { UpdateTicketCategoryDto } from './dto/update-ticketCategory.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { TicketCategory } from './entities/ticketCategory.entity';
+import { Repository } from 'typeorm';
 import { EventEntityService } from 'src/event_entity/eventEntity.service';
 
 @Injectable()
 export class TicketCategoryService {
   constructor(
     @InjectRepository(TicketCategory)
-    private readonly ticketCategoryRepository: Repository<TicketCategory>,
-    private readonly eventService: EventEntityService,
+    private ticketCategoryRepository: Repository<TicketCategory>,
+
+    private readonly eventEntityService: EventEntityService,
   ) {}
 
-  async create(createTicketCategoryDto: CreateTicketCategoryDto) {
+  async createMultiple(createTicketCategoriesDtos: CreateTicketCategoryDto[]) {
     try {
-      const existingEvent = await this.eventService.findOne(createTicketCategoryDto.eventId);
-      if (!existingEvent) {
-        throw new Error('Event not found');
-      }      
-      
-      const newTicketCategory = this.ticketCategoryRepository.create({
-        name: createTicketCategoryDto.name,
-        price: createTicketCategoryDto.price,
-        description: createTicketCategoryDto.description,
-        availableTickets: createTicketCategoryDto.availableTickets,
-        startDay: new Date(createTicketCategoryDto.startDay),
-        endDate: createTicketCategoryDto.endDate ? new Date(createTicketCategoryDto.endDate) : undefined,
-        event: existingEvent,
+      if (
+        !createTicketCategoriesDtos ||
+        createTicketCategoriesDtos.length === 0
+      ) {
+        return [];
+      }
+      const eventId = createTicketCategoriesDtos[0].eventId;
+      const event = await this.eventEntityService.findOne(eventId);
+
+      if (!event) {
+        throw new NotFoundException(`Event with id ${eventId} not found`);
+      }
+
+      const categoriesWithEvent = createTicketCategoriesDtos.map((dto) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { eventId, ...categoryData } = dto;
+        return {
+          ...categoryData,
+          event,
+        };
       });
 
-      const savedTicketCategory = await this.ticketCategoryRepository.save(newTicketCategory);
-      return savedTicketCategory;
+      const ticketCategories =
+        this.ticketCategoryRepository.create(categoriesWithEvent);
+      return await this.ticketCategoryRepository.save(ticketCategories);
     } catch (error) {
-      console.error('Error creating ticket category:', error);
-      throw error;
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      console.error('Error creating multiple ticket categories:', error);
+      throw new HttpException('Failed to create ticket categories', 500);
     }
+  }
+
+  async findAllTicketCategoriesFromEvent(eventId: number) {
+    const event = await this.eventEntityService.findOne(eventId);
+    if (!event) {
+      throw new NotFoundException(`Event with id ${eventId} not found`);
+    }
+    return this.ticketCategoryRepository.find({
+      where: { event: { id: eventId } },
+    });
   }
 
   async findOne(id: number) {
-    try {
-      const ticketCategory = await this.ticketCategoryRepository.findOne({
-        where: { id },
-        relations: ['event'] // Incluye la relación con el evento
-      });
+    const ticketCategory = await this.ticketCategoryRepository.findOneBy({
+      id,
+    });
+    if (!ticketCategory) {
+      throw new NotFoundException(`TicketCategory with id #${id} not found`);
+    }
+    return ticketCategory;
+  }
 
-      if (!ticketCategory) {
-        throw new Error(`Ticket category with ID ${id} not found`);
+  async update(id: number, updateTicketCategoryDto: UpdateTicketCategoryDto) {
+    const ticketCategory = await this.ticketCategoryRepository.preload({
+      id,
+      ...updateTicketCategoryDto,
+    });
+
+    if (!ticketCategory) {
+      throw new NotFoundException(`TicketCategory with id #${id} not found`);
+    }
+
+    if (updateTicketCategoryDto.eventId) {
+      const event = await this.eventEntityService.findOne(
+        updateTicketCategoryDto.eventId,
+      );
+      if (!event) {
+        throw new NotFoundException(
+          `Event with id ${updateTicketCategoryDto.eventId} not found`,
+        );
       }
+    }
 
-      return ticketCategory;
+    try {
+      return await this.ticketCategoryRepository.save(ticketCategory);
     } catch (error) {
-      console.error('Error finding ticket category:', error);
-      throw error;
+      console.error(`Error updating ticket category #${id}:`, error);
+      throw new HttpException('Failed to update ticket category', 500);
     }
   }
 
-  update(id: number, updateTicketCategoryDto: UpdateTicketCategoryDto) {
-    return `This action updates a #${id} ticketCategory`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} ticketCategory`;
-  }
-
-  findAll() {
-    return `This action removes a  ticketCategory`;
+  async remove(id: number) {
+    const ticketCategory = await this.findOne(id);
+    return this.ticketCategoryRepository.remove(ticketCategory);
   }
 }
