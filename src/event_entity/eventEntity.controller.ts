@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { EventEntityService } from './eventEntity.service';
 import { CreateEventEntityDto } from './dto/create-eventEntity.dto';
@@ -30,7 +31,10 @@ export class EventEntityController {
   }
 
   @Post('paginated')
-  getPaginated(@Body() pagination: PaginationRequest<EventEntity>) {
+  getPaginated(
+    @Body(new ValidationPipe({ transform: true }))
+    pagination: PaginationRequest<EventEntity>,
+  ) {
     return this.eventEntityService.getPaginated(pagination);
   }
 
