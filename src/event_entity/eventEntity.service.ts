@@ -1,4 +1,12 @@
-import { Injectable, NotFoundException, OnModuleInit, Inject, forwardRef, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  OnModuleInit,
+  Inject,
+  forwardRef,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateEventEntityDto } from './dto/create-eventEntity.dto';
@@ -18,7 +26,7 @@ export class EventEntityService implements OnModuleInit {
     private userService: UserService,
     @Inject(forwardRef(() => CategoryManageService))
     private categoryManageService: CategoryManageService,
-  ) { }
+  ) {}
 
   async onModuleInit() {
     await this.seedDefaultEvents();
@@ -30,7 +38,9 @@ export class EventEntityService implements OnModuleInit {
       const organizer = await this.userService.findUserByRole('organizer');
 
       if (!organizer) {
-        console.log('No se encontró un usuario organizador para crear eventos de prueba');
+        console.log(
+          'No se encontró un usuario organizador para crear eventos de prueba',
+        );
         return;
       }
 
@@ -39,23 +49,30 @@ export class EventEntityService implements OnModuleInit {
           name: 'Concierto de Rock',
           date: new Date('2024-06-15'),
           hour: '20:00',
-          location: { type: 'Point' as const, coordinates: [-99.1332, 19.4326] }, // Ciudad de México
+          location: {
+            type: 'Point' as const,
+            coordinates: [-99.1332, 19.4326],
+          }, // Ciudad de México
           city: 'Ciudad Capital',
-          description: 'Gran concierto de rock con bandas locales e internacionales',
+          description:
+            'Gran concierto de rock con bandas locales e internacionales',
           capacity: 5000,
           state: EventState.ACTIVE,
-          categories: [1, 5]
+          categories: [1, 5],
         },
         {
           name: 'Festival de Teatro',
           date: new Date('2024-07-01'),
           hour: '19:00',
-          location: { type: 'Point' as const, coordinates: [-58.3816, -34.6037] }, // Buenos Aires
+          location: {
+            type: 'Point' as const,
+            coordinates: [-58.3816, -34.6037],
+          }, // Buenos Aires
           city: 'Ciudad Cultural',
           description: 'Festival anual de teatro con obras nacionales',
           capacity: 800,
           state: EventState.ACTIVE,
-          categories: [2, 5]
+          categories: [2, 5],
         },
         {
           name: 'Torneo de Fútbol',
@@ -66,18 +83,21 @@ export class EventEntityService implements OnModuleInit {
           description: 'Torneo amateur de fútbol',
           capacity: 2000,
           state: EventState.IN_PROGRESS,
-          categories: [3]
+          categories: [3],
         },
         {
           name: 'Conferencia Tech',
           date: new Date('2024-09-20'),
           hour: '09:00',
-          location: { type: 'Point' as const, coordinates: [-122.4194, 37.7749] }, // San Francisco
+          location: {
+            type: 'Point' as const,
+            coordinates: [-122.4194, 37.7749],
+          }, // San Francisco
           city: 'Ciudad Tecnológica',
           description: 'Conferencia sobre las últimas tendencias en tecnología',
           capacity: 1000,
           state: EventState.ACTIVE,
-          categories: [4]
+          categories: [4],
         },
         {
           name: 'Exposición de Arte',
@@ -88,29 +108,35 @@ export class EventEntityService implements OnModuleInit {
           description: 'Exposición de artistas emergentes',
           capacity: 300,
           state: EventState.IN_PROGRESS,
-          categories: [6]
+          categories: [6],
         },
         {
           name: 'Feria Gastronómica',
           date: new Date('2024-11-15'),
           hour: '11:00',
-          location: { type: 'Point' as const, coordinates: [-46.6333, -23.5505] }, // São Paulo
+          location: {
+            type: 'Point' as const,
+            coordinates: [-46.6333, -23.5505],
+          }, // São Paulo
           city: 'Ciudad Gastronómica',
           description: 'Feria con los mejores restaurantes de la ciudad',
           capacity: 1500,
           state: EventState.ACTIVE,
-          categories: [7, 9]
+          categories: [7, 9],
         },
         {
           name: 'Festival de Cine',
           date: new Date('2024-12-01'),
           hour: '18:00',
-          location: { type: 'Point' as const, coordinates: [139.6917, 35.6895] }, // Tokio
+          location: {
+            type: 'Point' as const,
+            coordinates: [139.6917, 35.6895],
+          }, // Tokio
           city: 'Ciudad del Cine',
           description: 'Festival de cine independiente',
           capacity: 600,
           state: EventState.OVER,
-          categories: [8, 5]
+          categories: [8, 5],
         },
         {
           name: 'Feria del Libro',
@@ -118,40 +144,43 @@ export class EventEntityService implements OnModuleInit {
           hour: '09:00',
           location: { type: 'Point' as const, coordinates: [-0.1276, 51.5074] }, // Londres
           city: 'Ciudad Literaria',
-          description: 'Feria anual del libro con autores nacionales e internacionales',
+          description:
+            'Feria anual del libro con autores nacionales e internacionales',
           capacity: 2000,
           state: EventState.ACTIVE,
-          categories: [7, 10]
+          categories: [7, 10],
         },
         {
           name: 'Concierto Sinfónico',
           date: new Date('2025-02-14'),
           hour: '20:00',
-          location: { type: 'Point' as const, coordinates: [13.4050, 52.5200] }, // Berlín
+          location: { type: 'Point' as const, coordinates: [13.405, 52.52] }, // Berlín
           city: 'Ciudad Musical',
           description: 'Concierto de la orquesta sinfónica',
           capacity: 1200,
           state: EventState.ACTIVE,
-          categories: [1]
+          categories: [1],
         },
         {
           name: 'Festival Multicultural',
           date: new Date('2025-03-01'),
           hour: '12:00',
-          location: { type: 'Point' as const, coordinates: [151.2093, -33.8688] }, // Sídney
+          location: {
+            type: 'Point' as const,
+            coordinates: [151.2093, -33.8688],
+          }, // Sídney
           city: 'Ciudad Multicultural',
           description: 'Festival que celebra la diversidad cultural',
           capacity: 3000,
           state: EventState.ACTIVE,
-          categories: [5, 9]
-        }
+          categories: [5, 9],
+        },
       ];
-
 
       for (const template of eventTemplates) {
         // Verificar si el evento ya existe
         const existingEvent = await this.eventEntityRepository.findOne({
-          where: { name: template.name }
+          where: { name: template.name },
         });
 
         if (!existingEvent) {
@@ -170,11 +199,15 @@ export class EventEntityService implements OnModuleInit {
             try {
               await this.categoryManageService.create({
                 idEventEntity: savedEvent.id,
-                idEventCategory: categoryId
+                idEventCategory: categoryId,
               });
-              console.log(`Categoría ${categoryId} asociada al evento ${savedEvent.name}`);
+              console.log(
+                `Categoría ${categoryId} asociada al evento ${savedEvent.name}`,
+              );
             } catch (error) {
-              console.log(`Error al asociar categoría ${categoryId} al evento ${savedEvent.name}: ${error.message}`);
+              console.log(
+                `Error al asociar categoría ${categoryId} al evento ${savedEvent.name}: ${error.message}`,
+              );
             }
           }
         } else {
@@ -218,7 +251,7 @@ export class EventEntityService implements OnModuleInit {
   }
 
   async getPaginated(
-    pagination: PaginationRequest<EventEntity>
+    pagination: PaginationRequest<EventEntity>,
   ): Promise<IPaginationResponse<EventEntity>> {
     try {
       const { page, rowsPage, filter, order } = pagination;

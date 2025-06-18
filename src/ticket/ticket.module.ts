@@ -14,6 +14,6 @@ import { TransactionModule } from '../transaction/transaction.module';
   ],
   controllers: [TicketController],
   providers: [TicketService],
-  exports: [TypeOrmModule, TicketService]
+  exports: [TypeOrmModule, TicketService],
 })
 export class TicketModule {}

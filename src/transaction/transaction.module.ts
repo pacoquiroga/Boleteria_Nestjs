@@ -10,10 +10,10 @@ import { TransactionTicketRequestModule } from 'src/transaction_ticket_request/t
   imports: [
     TypeOrmModule.forFeature([Transaction]),
     EventEntityModule,
-    forwardRef(() => TransactionTicketRequestModule), 
+    forwardRef(() => TransactionTicketRequestModule),
   ],
   controllers: [TransactionController],
   providers: [TransactionService],
-  exports: [TypeOrmModule, TransactionService]
+  exports: [TypeOrmModule, TransactionService],
 })
 export class TransactionModule {}

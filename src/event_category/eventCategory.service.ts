@@ -126,15 +126,21 @@ export class EventCategoryService {
       { name: 'Exposición', description: 'Exhibiciones de arte y cultura' },
       { name: 'Feria', description: 'Ferias comerciales y de entretenimiento' },
       { name: 'Cine', description: 'Proyecciones de películas y documentales' },
-      { name: 'Gastronomía', description: 'Eventos relacionados con la comida' },
-      { name: 'Literatura', description: 'Lecturas y presentaciones literarias' },
+      {
+        name: 'Gastronomía',
+        description: 'Eventos relacionados con la comida',
+      },
+      {
+        name: 'Literatura',
+        description: 'Lecturas y presentaciones literarias',
+      },
     ];
     for (const category of defaultCategories) {
       const exists = await this.eventCategoryRepository.findOne({
         where: { name: category.name },
       });
       if (!exists) {
-        console.log("Categorias creadas")
+        console.log('Categorias creadas');
         await this.eventCategoryRepository.save(category);
       }
     }

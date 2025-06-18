@@ -18,8 +18,12 @@ export class TicketService {
 
   async create(createTicketDto: CreateTicketDto) {
     try {
-      const ticketCategory = await this.ticketCategoryService.findOne(createTicketDto.ticketCategoryId);
-      const transaction = await this.transactionService.findOne(createTicketDto.transactionId);
+      const ticketCategory = await this.ticketCategoryService.findOne(
+        createTicketDto.ticketCategoryId,
+      );
+      const transaction = await this.transactionService.findOne(
+        createTicketDto.transactionId,
+      );
 
       if (!ticketCategory) {
         throw new Error('Ticket category not found');
@@ -76,7 +80,7 @@ export class TicketService {
   async update(id: number, updateTicketDto: UpdateTicketDto) {
     try {
       const result = await this.ticketRepository.update(id, updateTicketDto);
-      
+
       if (result.affected === 0) {
         throw new Error(`Ticket with ID ${id} not found`);
       }
@@ -91,7 +95,7 @@ export class TicketService {
   async remove(id: number) {
     try {
       const result = await this.ticketRepository.delete(id);
-      
+
       if (result.affected === 0) {
         throw new Error(`Ticket with ID ${id} not found`);
       }

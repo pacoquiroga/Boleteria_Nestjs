@@ -1,4 +1,3 @@
-
 export interface AuthToken {
   access_token: string;
   user: {
@@ -12,6 +11,6 @@ export interface AuthToken {
 }
 
 export declare class LoginDto {
-    username: string;
-    password: string;
+  username: string;
+  password: string;
 }

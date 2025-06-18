@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { EventState } from '../enums/event-state.enum';
 import { Point } from 'geojson';
@@ -34,11 +40,11 @@ export class EventEntity {
   @Column({ type: 'integer' })
   capacity: number;
 
-  @Column({ 
-    type: 'varchar', 
+  @Column({
+    type: 'varchar',
     length: 20,
     enum: EventState,
-    default: EventState.ACTIVE 
+    default: EventState.ACTIVE,
   })
   state: EventState;
 

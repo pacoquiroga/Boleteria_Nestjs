@@ -8,9 +8,9 @@ import { CategoryManageModule } from 'src/category_manage/categoryManage.module'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([EventEntity]), 
+    TypeOrmModule.forFeature([EventEntity]),
     UserModule,
-    forwardRef(() => CategoryManageModule)
+    forwardRef(() => CategoryManageModule),
   ],
   controllers: [EventEntityController],
   providers: [EventEntityService],

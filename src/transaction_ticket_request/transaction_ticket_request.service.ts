@@ -17,30 +17,41 @@ export class TransactionTicketRequestService {
     private readonly ticketCategoryService: TicketCategoryService,
   ) {}
 
-  async create(createTransactionTicketRequestDto: CreateTransactionTicketRequestDto) {
+  async create(
+    createTransactionTicketRequestDto: CreateTransactionTicketRequestDto,
+  ) {
     try {
       const savedTicketRequests: TransactionTicketRequest[] = [];
 
-      const transaction = await this.transactionService.findOne(createTransactionTicketRequestDto.idTransaction);
+      const transaction = await this.transactionService.findOne(
+        createTransactionTicketRequestDto.idTransaction,
+      );
 
       if (!transaction) {
         throw new Error('Transaction not found');
       }
 
       for (const request of createTransactionTicketRequestDto.ticketCategoryRequests) {
-        const ticketCategory = await this.ticketCategoryService.findOne(request.ticketCategoryId);
+        const ticketCategory = await this.ticketCategoryService.findOne(
+          request.ticketCategoryId,
+        );
 
         if (!ticketCategory) {
-          throw new Error(`Ticket category with ID ${request.ticketCategoryId} not found`);
+          throw new Error(
+            `Ticket category with ID ${request.ticketCategoryId} not found`,
+          );
         }
 
-        const newTicketRequest = this.transactionTicketRequestRepository.create({
-          quantity: request.quantity,
-          transaction: transaction,
-          ticketCategory: ticketCategory,
-        });
+        const newTicketRequest = this.transactionTicketRequestRepository.create(
+          {
+            quantity: request.quantity,
+            transaction: transaction,
+            ticketCategory: ticketCategory,
+          },
+        );
 
-        const savedTicketRequest = await this.transactionTicketRequestRepository.save(newTicketRequest);
+        const savedTicketRequest =
+          await this.transactionTicketRequestRepository.save(newTicketRequest);
         savedTicketRequests.push(savedTicketRequest);
       }
 
@@ -59,7 +70,10 @@ export class TransactionTicketRequestService {
     return `This action returns a #${id} transactionTicketRequest`;
   }
 
-  update(id: number, updateTransactionTicketRequestDto: UpdateTransactionTicketRequestDto) {
+  update(
+    id: number,
+    updateTransactionTicketRequestDto: UpdateTransactionTicketRequestDto,
+  ) {
     return `This action updates a #${id} transactionTicketRequest`;
   }
 

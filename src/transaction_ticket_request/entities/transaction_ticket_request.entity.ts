@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Transaction } from '../../transaction/entities/transaction.entity';
 import { TicketCategory } from '../../ticket_category/entities/ticketCategory.entity';
 

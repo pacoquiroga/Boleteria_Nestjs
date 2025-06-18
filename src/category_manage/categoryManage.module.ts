@@ -12,7 +12,7 @@ import { EventCategoryModule } from '../event_category/eventCategory.module';
   imports: [
     TypeOrmModule.forFeature([CategoryManage, EventCategory, EventEntity]),
     forwardRef(() => EventEntityModule),
-    EventCategoryModule
+    EventCategoryModule,
   ],
   controllers: [CategoryManageController],
   providers: [CategoryManageService],

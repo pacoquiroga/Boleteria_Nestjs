@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,7 +23,7 @@ export class UserService {
     private userRepository: Repository<User>,
     @InjectRepository(Rol)
     private rolRepository: Repository<Rol>,
-  ) { }
+  ) {}
 
   private generarCadenaAleatoria(longitud: number): string {
     const caracteres =

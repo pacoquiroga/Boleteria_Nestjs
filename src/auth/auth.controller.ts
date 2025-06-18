@@ -1,4 +1,13 @@
-import { Body, Controller, HttpException, HttpStatus, Logger, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Logger,
+  Post,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { first, firstValueFrom } from 'rxjs';
@@ -8,9 +17,7 @@ import { AuthToken, LoginDto } from './types.d/auth.interface';
 @Controller('auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
-  constructor(
-    private readonly authService: AuthService
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('/signup')
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -23,24 +30,27 @@ export class AuthController {
       return result;
     } catch (error) {
       this.logger.error('Signup error: ', error);
-      throw new HttpException(error.message || "User registration failed", error.status || HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        error.message || 'User registration failed',
+        error.status || HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
   @Post('/login')
   @UsePipes(new ValidationPipe({ transform: true }))
-  async login(
-    @Body() loginDto: LoginDto
-  ): Promise<AuthToken> {
+  async login(@Body() loginDto: LoginDto): Promise<AuthToken> {
     console.log('Login attempt:', loginDto);
-    try{
+    try {
       const result = await this.authService.login(loginDto);
       console.log('Login successful:', result);
       return result;
-    }catch (error) {
+    } catch (error) {
       this.logger.error('Login error: ', error);
-      throw new HttpException(error.message || "Login failed", error.status || HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        error.message || 'Login failed',
+        error.status || HttpStatus.BAD_REQUEST,
+      );
     }
   }
-
 }

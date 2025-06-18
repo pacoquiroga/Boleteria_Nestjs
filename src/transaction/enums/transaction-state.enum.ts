@@ -3,5 +3,5 @@ export enum TransactionState {
   COMPLETED = 'COMPLETED',
   FAILED = 'FAILED',
   CANCELLED = 'CANCELLED',
-  REFUNDED = 'REFUNDED'
+  REFUNDED = 'REFUNDED',
 }

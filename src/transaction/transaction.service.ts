@@ -14,20 +14,22 @@ export class TransactionService {
     private readonly transactionRepository: Repository<Transaction>,
     private readonly eventService: EventEntityService,
     @Inject(forwardRef(() => TransactionTicketRequestService))
-    private readonly transactionTicketRequestService: TransactionTicketRequestService, 
-  ) { }
+    private readonly transactionTicketRequestService: TransactionTicketRequestService,
+  ) {}
 
   async create(createTransactionDto: CreateTransactionDto) {
     try {
-      const existingEvent = await this.eventService.findOne(createTransactionDto.eventId);
-      
+      const existingEvent = await this.eventService.findOne(
+        createTransactionDto.eventId,
+      );
+
       if (!existingEvent) {
         throw new Error('Event not found');
-      }      
-        const newTransaction = this.transactionRepository.create({
+      }
+      const newTransaction = this.transactionRepository.create({
         totalAmount: createTransactionDto.totalAmount,
         purchaseDate: createTransactionDto.purchaseDate || new Date(),
-        state: createTransactionDto.state || 'PENDING', 
+        state: createTransactionDto.state || 'PENDING',
         paymentMethod: createTransactionDto.paymentMethod,
         ownerId: createTransactionDto.ownerId,
         ownerEmail: createTransactionDto.ownerEmail,
@@ -37,24 +39,26 @@ export class TransactionService {
         event: existingEvent,
       });
 
-      const savedTransaction = await this.transactionRepository.save(newTransaction);
+      const savedTransaction =
+        await this.transactionRepository.save(newTransaction);
 
-      const transactionRequests = await this.transactionTicketRequestService.create({
-        idTransaction: savedTransaction.id,
-        ticketCategoryRequests: createTransactionDto.ticketCategoryRequests
-      })
+      const transactionRequests =
+        await this.transactionTicketRequestService.create({
+          idTransaction: savedTransaction.id,
+          ticketCategoryRequests: createTransactionDto.ticketCategoryRequests,
+        });
 
       console.log('Transaction created successfully:', savedTransaction);
-      console.log('Transaction requests created successfully:', transactionRequests);
+      console.log(
+        'Transaction requests created successfully:',
+        transactionRequests,
+      );
 
       return savedTransaction;
-    }catch (error) {
+    } catch (error) {
       console.error('Error creating transaction:', error);
       throw new Error('Failed to create transaction');
     }
-    
-    
-    
   }
 
   findAll() {
@@ -64,7 +68,7 @@ export class TransactionService {
     try {
       const transaction = await this.transactionRepository.findOne({
         where: { id },
-        relations: ['event'] // Incluye la relación con el evento
+        relations: ['event'], // Incluye la relación con el evento
       });
 
       if (!transaction) {

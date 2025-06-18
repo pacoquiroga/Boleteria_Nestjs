@@ -10,10 +10,10 @@ import { TicketCategoryModule } from 'src/ticket_category/ticketCategory.module'
   imports: [
     TypeOrmModule.forFeature([TransactionTicketRequest]),
     forwardRef(() => TransactionModule),
-    TicketCategoryModule, 
+    TicketCategoryModule,
   ],
   controllers: [TransactionTicketRequestController],
   providers: [TransactionTicketRequestService],
-  exports: [TypeOrmModule, TransactionTicketRequestService]
+  exports: [TypeOrmModule, TransactionTicketRequestService],
 })
 export class TransactionTicketRequestModule {}

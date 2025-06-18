@@ -13,4 +13,4 @@ export abstract class PaginationRequest<T> implements IPaginationRequest<T> {
 
   @IsString({ message: 'El orden debe ser una cadena de texto' })
   order: 'ASC' | 'DESC';
-} 
+}

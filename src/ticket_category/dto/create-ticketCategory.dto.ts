@@ -4,6 +4,8 @@ import {
   IsInt,
   IsNotEmpty,
   IsString,
+  MaxLength,
+  Min,
 } from 'class-validator';
 
 export class CreateTicketCategoryDto {

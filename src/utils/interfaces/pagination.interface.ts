@@ -10,4 +10,4 @@ export interface IPaginationResponse<T> {
   count: number;
   page: number;
   rowsPage: number;
-} 
+}

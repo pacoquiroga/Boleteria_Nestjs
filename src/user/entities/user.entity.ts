@@ -21,15 +21,29 @@ export class User {
   @Column({ type: 'varchar', length: 100 })
   password: string;
 
-  @Column({name: 'salt', type: 'varchar', comment: 'Salt utilizado para cifrado de la contraseña', length: 128})
+  @Column({
+    name: 'salt',
+    type: 'varchar',
+    comment: 'Salt utilizado para cifrado de la contraseña',
+    length: 128,
+  })
   salt: string;
 
   @Column({ type: 'varchar', length: 10 })
   phone: string;
 
-  @Column({ name: 'registration_day', type: 'date', default: () => 'CURRENT_DATE' })
+  @Column({
+    name: 'registration_day',
+    type: 'date',
+    default: () => 'CURRENT_DATE',
+  })
   registrationDay: Date;
 
-  @Column({name: 'last_login',type: 'timestamp',default: () => 'CURRENT_TIMESTAMP',comment: 'Fecha y hora del último inicio de sesión'})
+  @Column({
+    name: 'last_login',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    comment: 'Fecha y hora del último inicio de sesión',
+  })
   lastLogin: Date;
 }
