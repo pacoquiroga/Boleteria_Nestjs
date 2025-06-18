@@ -27,7 +27,7 @@ export class TicketCategory {
   @Column({ type: 'date', name: 'start_day' })
   startDay: Date;
 
-  @Column({ type: 'date', name: 'end_date' })
+  @Column({ type: 'date', name: 'end_date', nullable: true })
   endDate: Date;
 
   @ManyToOne(() => EventEntity)

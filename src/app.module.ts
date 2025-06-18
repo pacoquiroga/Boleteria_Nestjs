@@ -13,6 +13,7 @@ import { CategoryManageModule } from './category_manage/categoryManage.module';
 import { AuthModule } from './auth/auth.module';
 import { UserRolModule } from './user_rol/user_rol.module';
 import { ConfigModule } from '@nestjs/config';
+import { TransactionTicketRequestModule } from './transaction_ticket_request/transaction_ticket_request.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ConfigModule } from '@nestjs/config';
     CategoryManageModule,
     AuthModule,
     UserRolModule,
+    TransactionTicketRequestModule,
   ],
   controllers: [AppController],
   providers: [AppService],

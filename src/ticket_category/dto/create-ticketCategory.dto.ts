@@ -11,6 +11,7 @@ export class CreateTicketCategoryDto {
   @IsString({
     message: 'El nombre de la categoría de ticket debe ser un texto',
   })
+  @MaxLength(30, { message: 'El nombre no puede exceder 30 caracteres' })
   name: string;
 
   @IsNotEmpty({ message: 'El precio de la categoría de ticket es requerido' })
@@ -18,6 +19,7 @@ export class CreateTicketCategoryDto {
     { decimal_digits: '2' },
     { message: 'El precio debe ser un número decimal de 2 dígitos' },
   )
+  @Min(0, { message: 'El precio debe ser mayor o igual a 0' })
   price: number;
 
   @IsNotEmpty({
@@ -26,6 +28,7 @@ export class CreateTicketCategoryDto {
   @IsString({
     message: 'La descripción de la categoría de ticket debe ser un texto',
   })
+  @MaxLength(100, { message: 'La descripción no puede exceder 100 caracteres' })
   description: string;
 
   @IsNotEmpty({
@@ -36,6 +39,7 @@ export class CreateTicketCategoryDto {
     message:
       'El número de tickets disponibles de la categoría de ticket debe ser un número entero',
   })
+  @Min(0, { message: 'Los tickets disponibles deben ser mayor o igual a 0' })
   availableTickets: number;
 
   @IsNotEmpty({
