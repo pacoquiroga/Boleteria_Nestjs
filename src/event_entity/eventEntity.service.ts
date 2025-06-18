@@ -8,7 +8,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateEventEntityDto } from './dto/create-eventEntity.dto';
 import { UpdateEventEntityDto } from './dto/update-eventEntity.dto';
 import { EventEntity } from './entities/eventEntity.entity';
@@ -17,6 +17,7 @@ import { EventState } from './enums/event-state.enum';
 import { CategoryManageService } from '../category_manage/categoryManage.service';
 import { IPaginationResponse } from '../utils/interfaces/pagination.interface';
 import { PaginationRequest } from 'src/utils/dto/pagination.dto';
+import { FilterFactory } from 'src/utils/filterFactory';
 
 @Injectable()
 export class EventEntityService implements OnModuleInit {
@@ -253,23 +254,28 @@ export class EventEntityService implements OnModuleInit {
   async getPaginated(
     pagination: PaginationRequest<EventEntity>,
   ): Promise<IPaginationResponse<EventEntity>> {
+    console.log('Pagination request:', pagination);
+    const { page, rowsPage, filter, orderBy, order, fields } = pagination;
+
+    const skip = (page - 1) * rowsPage;
+
+    const where: FindOptionsWhere<EventEntity> =
+      FilterFactory.createFilter<EventEntity>(
+        filter,
+        ['name', 'city'],
+        [['idUser'], ['user'], ['id']],
+      );
+
     try {
-      const { page, rowsPage, filter, order } = pagination;
-
-      // Convertir los filtros en objeto con las claves originales
-      const filtersObject = Object.keys(filter).reduce((acc, key) => {
-        acc[key] = true;
-        return acc;
-      }, {} as any);
-
-      const skip = (page - 1) * rowsPage;
       const [data, count] = await this.eventEntityRepository.findAndCount({
         skip,
         take: rowsPage,
-        order: { id: order },
-        where: filter,
-        relations: ['user'],
-        select: filtersObject,
+        order: { [orderBy]: order },
+        where,
+        select:
+          fields.length > 0
+            ? fields
+            : (Object.keys(EventEntity) as (keyof EventEntity)[]),
       });
 
       return {
