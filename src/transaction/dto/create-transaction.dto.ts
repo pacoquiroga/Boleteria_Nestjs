@@ -68,6 +68,10 @@ export class CreateTransactionDto {
   @IsString({ message: 'La cédula del propietario debe ser un string' })
   ownerCi: string;
 
+  @IsOptional()
+  @IsString()
+  voucherPath?: string;
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TicketCategoryRequest)
