@@ -14,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserRolModule } from './user_rol/user_rol.module';
 import { ConfigModule } from '@nestjs/config';
 import { TransactionTicketRequestModule } from './transaction_ticket_request/transaction_ticket_request.module';
+import { MailService } from './mail/mail.service';
 
 @Module({
   imports: [
@@ -41,6 +42,6 @@ import { TransactionTicketRequestModule } from './transaction_ticket_request/tra
     TransactionTicketRequestModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, MailService],
 })
 export class AppModule {}

@@ -29,6 +29,7 @@ export class CreateTransactionDto {
   totalAmount: number;
 
   @IsOptional()
+  @IsOptional()
   @IsEnum(TransactionState, { message: 'El estado debe ser un valor válido' })
   state: TransactionState = TransactionState.PENDING;
 
@@ -45,6 +46,7 @@ export class CreateTransactionDto {
 
   // Campos de información del comprador    @IsOptional()
   @IsDate({ message: 'La fecha de compra debe ser una fecha válida' })
+  @IsOptional()
   @Transform(({ value }) => (value ? new Date(value) : new Date()))
   purchaseDate: Date = new Date();
 

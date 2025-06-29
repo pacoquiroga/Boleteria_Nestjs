@@ -23,19 +23,10 @@ export class TransactionService {
         createTransactionDto.eventId,
       );
 
-      if (!existingEvent) {
-        throw new Error('Event not found');
-      }
       const newTransaction = this.transactionRepository.create({
-        totalAmount: createTransactionDto.totalAmount,
+        ...createTransactionDto,
         purchaseDate: createTransactionDto.purchaseDate || new Date(),
         state: createTransactionDto.state || 'PENDING',
-        paymentMethod: createTransactionDto.paymentMethod,
-        ownerId: createTransactionDto.ownerId,
-        ownerEmail: createTransactionDto.ownerEmail,
-        ownerName: createTransactionDto.ownerName,
-        ownerLastname: createTransactionDto.ownerLastname,
-        ownerCi: createTransactionDto.ownerCi,
         event: existingEvent,
       });
 
@@ -64,6 +55,7 @@ export class TransactionService {
   findAll() {
     return `This action returns all transaction`;
   }
+
   async findOne(id: number) {
     try {
       const transaction = await this.transactionRepository.findOne({
@@ -83,6 +75,8 @@ export class TransactionService {
   }
 
   update(id: number, updateTransactionDto: UpdateTransactionDto) {
+    console.log('Updating transaction with ID:', id);
+    console.log('Update data:', updateTransactionDto);
     return `This action updates a #${id} transaction`;
   }
 
