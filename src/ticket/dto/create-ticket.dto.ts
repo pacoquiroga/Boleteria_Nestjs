@@ -1,26 +1,6 @@
-import {
-  IsDate,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  IsOptional,
-} from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateTicketDto {
-  @IsNotEmpty()
-  @IsString({ message: 'El código QR debe ser un string' })
-  qrCode: string;
-
-  @IsNotEmpty()
-  @IsString({ message: 'El estado debe ser un string' })
-  state: string;
-
-  @IsOptional()
-  @IsDate({ message: 'La fecha de uso debe ser una fecha válida' })
-  @Transform(({ value }) => (value ? new Date(value) : null))
-  useDate?: Date;
-
   @IsNotEmpty()
   @IsNumber(
     {},

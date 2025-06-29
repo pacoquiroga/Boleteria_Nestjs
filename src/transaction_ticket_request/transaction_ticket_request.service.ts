@@ -6,6 +6,8 @@ import { TransactionTicketRequest } from './entities/transaction_ticket_request.
 import { Repository } from 'typeorm';
 import { TransactionService } from '../transaction/transaction.service';
 import { TicketCategoryService } from '../ticket_category/ticketCategory.service';
+import { TicketService } from 'src/ticket/ticket.service';
+import { Ticket } from 'src/ticket/entities/ticket.entity';
 
 @Injectable()
 export class TransactionTicketRequestService {
@@ -15,6 +17,8 @@ export class TransactionTicketRequestService {
     @Inject(forwardRef(() => TransactionService))
     private readonly transactionService: TransactionService,
     private readonly ticketCategoryService: TicketCategoryService,
+    @Inject(forwardRef(() => TicketService))
+    private readonly ticketService: TicketService,
   ) {}
 
   async create(
@@ -79,5 +83,52 @@ export class TransactionTicketRequestService {
 
   remove(id: number) {
     return `This action removes a #${id} transactionTicketRequest`;
+  }
+
+  async createTickets(transactionId: number) {
+    try {
+      const transaction = await this.transactionService.findOne(transactionId);
+      if (!transaction) {
+        throw new Error('Transaction not found');
+      }
+
+      const ticketRequests = await this.transactionTicketRequestRepository.find(
+        {
+          where: { transaction: { id: transactionId } },
+          relations: ['ticketCategory'],
+        },
+      );
+
+      if (!ticketRequests || ticketRequests.length === 0) {
+        throw new Error('No ticket requests found for this transaction');
+      }
+      console.log('Ticket requests found:', ticketRequests);
+
+      // Crear un array de promesas para todos los tickets
+      const ticketPromises: Promise<Ticket>[] = [];
+
+      for (const request of ticketRequests) {
+        // Crear tantos tickets como indique la quantity
+        for (let i = 0; i < request.quantity; i++) {
+          const ticketPromise = this.ticketService.create({
+            ticketCategoryId: request.ticketCategory.id,
+            transactionId: transaction.id,
+          });
+          ticketPromises.push(ticketPromise);
+        }
+      }
+
+      // Ejecutar todas las promesas de creación de tickets
+      const createdTickets = await Promise.all(ticketPromises);
+
+      console.log(
+        `Successfully created ${createdTickets.length} tickets for transaction ${transactionId}`,
+      );
+
+      return createdTickets;
+    } catch (error) {
+      console.error('Error creating tickets:', error);
+      throw error;
+    }
   }
 }

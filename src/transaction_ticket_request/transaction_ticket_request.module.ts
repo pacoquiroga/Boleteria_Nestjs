@@ -5,12 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TransactionTicketRequest } from './entities/transaction_ticket_request.entity';
 import { TransactionModule } from 'src/transaction/transaction.module';
 import { TicketCategoryModule } from 'src/ticket_category/ticketCategory.module';
+import { TicketModule } from 'src/ticket/ticket.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([TransactionTicketRequest]),
     forwardRef(() => TransactionModule),
     TicketCategoryModule,
+    forwardRef(() => TicketModule),
   ],
   controllers: [TransactionTicketRequestController],
   providers: [TransactionTicketRequestService],

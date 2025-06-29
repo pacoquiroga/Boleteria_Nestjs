@@ -65,4 +65,9 @@ export class TransactionController {
   remove(@Param('id') id: string) {
     return this.transactionService.remove(+id);
   }
+
+  @Get('confirm-payment/:id')
+  confirmPayment(@Param('id') id: string) {
+    return this.transactionService.confirmPayment(+id);
+  }
 }

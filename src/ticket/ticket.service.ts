@@ -34,9 +34,6 @@ export class TicketService {
       }
 
       const newTicket = this.ticketRepository.create({
-        qrCode: createTicketDto.qrCode,
-        state: createTicketDto.state,
-        useDate: createTicketDto.useDate,
         ticketCategory: ticketCategory,
         transaction: transaction,
       });

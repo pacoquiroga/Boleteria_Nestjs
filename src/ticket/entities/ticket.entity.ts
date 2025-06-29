@@ -13,9 +13,9 @@ export class Ticket {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
-  @Column({ type: 'varchar', length: 300, name: 'qr_code' })
+  @Column({ type: 'varchar', length: 300, name: 'qr_code', nullable: true })
   qrCode: string;
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'varchar', length: 20, default: 'PENDING' })
   state: string;
 
   @Column({ type: 'timestamp', name: 'use_date', nullable: true })
