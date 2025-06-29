@@ -39,6 +39,14 @@ export class Transaction {
   @Column({ type: 'varchar', length: 20, name: 'owner_ci' })
   ownerCi: string;
 
+  @Column({
+    type: 'varchar',
+    length: 200,
+    name: 'voucher_path',
+    nullable: true,
+  })
+  voucherPath: string;
+
   @ManyToOne(() => EventEntity)
   @JoinColumn({ name: 'event_id' })
   event: EventEntity;

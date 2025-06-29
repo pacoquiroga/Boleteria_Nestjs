@@ -64,6 +64,7 @@ export class TransactionService {
   findAll() {
     return `This action returns all transaction`;
   }
+
   async findOne(id: number) {
     try {
       const transaction = await this.transactionRepository.findOne({
@@ -82,8 +83,24 @@ export class TransactionService {
     }
   }
 
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    return `This action updates a #${id} transaction`;
+  async update(id: number, updateTransactionDto: UpdateTransactionDto) {
+    // Validacion de existencia
+    await this.findOne(id);
+
+    if (updateTransactionDto.eventId) {
+      await this.eventService.findOne(updateTransactionDto.eventId);
+    }
+
+    try {
+      await this.transactionRepository.update(id, updateTransactionDto);
+      const updatedTransaction = await this.transactionRepository.findOne({
+        where: { id },
+      });
+      return updatedTransaction;
+    } catch (error) {
+      console.error('Error updating transaction:', error);
+      throw new Error('Failed to update transaction');
+    }
   }
 
   remove(id: number) {
