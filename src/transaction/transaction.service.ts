@@ -12,6 +12,7 @@ import { Repository } from 'typeorm';
 import { Transaction } from './entities/transaction.entity';
 import { EventEntityService } from 'src/event_entity/eventEntity.service';
 import { TransactionTicketRequestService } from 'src/transaction_ticket_request/transaction_ticket_request.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class TransactionService {
@@ -21,6 +22,7 @@ export class TransactionService {
     private readonly eventService: EventEntityService,
     @Inject(forwardRef(() => TransactionTicketRequestService))
     private readonly transactionTicketRequestService: TransactionTicketRequestService,
+    private readonly mailService: MailService,
   ) {}
 
   async create(createTransactionDto: CreateTransactionDto) {
@@ -102,6 +104,17 @@ export class TransactionService {
       const updatedTransaction = await this.transactionRepository.findOne({
         where: { id },
       });
+
+      if (updatedTransaction) {
+        await this.mailService.sendVoucher(
+          'EPAA@epaa.com',
+          updatedTransaction.ownerName,
+          updateTransactionDto.voucherPath || 'voucher.png',
+          updatedTransaction.totalAmount,
+          id,
+        );
+      }
+
       return updatedTransaction;
     } catch (error) {
       console.error('Error updating transaction:', error);
